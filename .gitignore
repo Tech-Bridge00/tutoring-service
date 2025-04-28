@@ -1,0 +1,56 @@
+# --- Java ---
+*.class
+*.jar
+*.war
+*.ear
+
+# --- Logs ---
+*.log
+
+# --- Build / IDE / Configs ---
+/target/
+out/
+build/
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+.gradle-cache/
+.gradle-local/
+
+# --- Spring Boot Specific ---
+*.h2.db
+*.mv.db
+
+# --- Environment Files ---
+.env
+.env.*
+*.local
+
+# --- IntelliJ IDEA ---
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# --- VSCode ---
+.vscode/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Application Configuration ---
+/src/main/resources/application.yml
+/src/main/resources/application-*.yml
+!/src/main/resources/application-local.yml
+
+# --- Test Reports ---
+/test-output/
+/coverage/
+/reports/
+
+# --- Others ---
+/bin/
+/tmp/
+*.swp
+*.swo
+*.bak
