@@ -2,6 +2,7 @@ package com.example.techbridge.domain.member.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -15,8 +16,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -42,8 +45,9 @@ public class Member {
     @Column(nullable = false)
     private Integer age;
 
-    @Column(length = 1)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
 
     @Column(nullable = false, length = 11)
     private String contact;
@@ -79,5 +83,9 @@ public class Member {
 
     public enum Role {
         STUDENT, TEACHER
+    }
+
+    public enum Gender {
+        M, F
     }
 }
