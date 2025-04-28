@@ -3,6 +3,7 @@ package com.example.techbridge.domain.member.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.techbridge.domain.member.entity.Member;
+import com.example.techbridge.domain.member.entity.Member.Gender;
 import com.example.techbridge.domain.member.entity.Member.Role;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +26,7 @@ class MemberRepositoryTest {
             .name("홍길동")
             .nickname("아이티보이")
             .age(24)
-            .gender("M")
+            .gender(Gender.M)
             .contact("01012345678")
             .email("test@example.com")
             .status("학생")
