@@ -32,5 +32,5 @@ public class Tutor extends BaseTimeEntity {
     private String jobTitle;
     private String portfolioUrl;
     private Integer totalExperience;
-    private boolean isCurrentlyEmployed;
+    private Boolean currentlyEmployed;
 }
