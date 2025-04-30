@@ -67,7 +67,7 @@ public class Member extends BaseTimeEntity {
     private Long totalClassCount;
 
     public enum Role {
-        STUDENT, TEACHER
+        STUDENT, TUTOR
     }
 
     public enum Gender {
