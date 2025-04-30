@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.entity.Member.Gender;
 import com.example.techbridge.domain.member.entity.Member.Role;
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,6 @@ class MemberRepositoryTest {
             .status("학생")
             .role(Role.STUDENT)
             .location("서울")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
             .build();
     }
 
@@ -67,7 +64,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    @DisplayName("아이디로 회원 조회")
+    @DisplayName("이메일로 회원 조회")
     void findByEmail_whenExists_returnsMember() {
         // given
         memberRepository.save(member());
