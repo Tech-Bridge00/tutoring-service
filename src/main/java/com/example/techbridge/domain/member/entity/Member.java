@@ -88,4 +88,8 @@ public class Member {
     public enum Gender {
         M, F
     }
+
+    public void encodePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }
