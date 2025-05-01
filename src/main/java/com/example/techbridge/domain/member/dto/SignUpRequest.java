@@ -1,16 +1,19 @@
 package com.example.techbridge.domain.member.dto;
 
-import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.entity.Member.Gender;
 import com.example.techbridge.domain.member.entity.Member.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class SignUpRequest {
 
     @NotBlank(message = "아이디는 필수입니다.")
@@ -49,20 +52,4 @@ public class SignUpRequest {
     @NotBlank(message = "위치 정보는 필수입니다.")
     private String location;
 
-    public Member toEntity() {
-        return Member.builder()
-            .username(username)
-            .password(password)
-            .name(name)
-            .nickname(nickname)
-            .age(age)
-            .gender(gender)
-            .contact(contact)
-            .email(email)
-            .profileImage(profileImage)
-            .status(status)
-            .role(role)
-            .location(location)
-            .build();
-    }
 }
