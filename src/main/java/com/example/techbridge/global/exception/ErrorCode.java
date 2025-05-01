@@ -13,6 +13,10 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS("M002", "이미 사용 중인 이메일입니다.", HttpStatus.CONFLICT),
     USERNAME_ALREADY_EXISTS("M003", "이미 사용 중인 아이디입니다.", HttpStatus.CONFLICT),
     INVALID_MEMBER_PASSWORD("M004", "비밀번호가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED),
+    SAME_AS_OLD_PASSWORD("M005", "기존 비밀번호와 동일합니다.", HttpStatus.BAD_REQUEST),
+    STUDENT_INFO_REQUIRED("M006", "학생 추가 정보가 필요합니다.", HttpStatus.BAD_REQUEST),
+    TUTOR_INFO_REQUEST("M007", "튜터 추가 정보가 필요합니다.", HttpStatus.BAD_REQUEST),
+    INVALID_MEMBER_QUERY("M008", "username 또는 email 중 하나는 반드시 필요합니다.", HttpStatus.BAD_REQUEST),
 
     // ====== COMMON ======
     BAD_REQUEST("C400", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
