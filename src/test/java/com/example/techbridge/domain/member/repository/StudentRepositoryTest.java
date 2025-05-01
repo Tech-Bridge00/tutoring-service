@@ -58,11 +58,11 @@ class StudentRepositoryTest {
         studentRepository.save(student);
 
         // when
-        Optional<Student> foundMember = studentRepository.findByMember_Id(member.getId());
+        Optional<Student> foundStudent = studentRepository.findByMemberId(member.getId());
 
         // then
-        assertThat(foundMember).isPresent();
-        assertThat(foundMember.get().getMember().getUsername()).isEqualTo("student1234");
-        assertThat(foundMember.get().getInterestedField()).isEqualTo("백엔드");
+        assertThat(foundStudent).isPresent();
+        assertThat(foundStudent.get().getMember().getUsername()).isEqualTo("student1234");
+        assertThat(foundStudent.get().getInterestedField()).isEqualTo("백엔드");
     }
 }

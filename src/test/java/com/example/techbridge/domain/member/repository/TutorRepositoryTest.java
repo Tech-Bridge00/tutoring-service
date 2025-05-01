@@ -61,13 +61,13 @@ class TutorRepositoryTest {
         tutorRepository.save(tutor);
 
         // when
-        Optional<Tutor> foundMember = tutorRepository.findByMember_Id(member.getId());
+        Optional<Tutor> foundTutor = tutorRepository.findByMemberId(member.getId());
 
         // then
-        assertThat(foundMember).isPresent();
-        assertThat(foundMember.get().getMember().getUsername()).isEqualTo("tutor1234");
-        assertThat(foundMember.get().getIntroduction()).isEqualTo("안녕하세요. 반가워요.");
-        assertThat(foundMember.get().getTotalExperience()).isEqualTo(24);
-        assertThat(foundMember.get().getCurrentlyEmployed()).isTrue();
+        assertThat(foundTutor).isPresent();
+        assertThat(foundTutor.get().getMember().getUsername()).isEqualTo("tutor1234");
+        assertThat(foundTutor.get().getIntroduction()).isEqualTo("안녕하세요. 반가워요.");
+        assertThat(foundTutor.get().getTotalExperience()).isEqualTo(24);
+        assertThat(foundTutor.get().getCurrentlyEmployed()).isTrue();
     }
 }
