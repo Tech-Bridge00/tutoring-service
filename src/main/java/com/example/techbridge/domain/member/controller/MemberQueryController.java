@@ -1,17 +1,18 @@
 package com.example.techbridge.domain.member.controller;
 
+import com.example.techbridge.domain.member.dto.MemberDetailResponse;
 import com.example.techbridge.domain.member.dto.MemberResponse;
-import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
 import com.example.techbridge.domain.member.entity.Member;
-import com.example.techbridge.domain.member.service.MemberService;
-import jakarta.validation.Valid;
-import java.net.URI;
+import com.example.techbridge.domain.member.entity.Member.Role;
+import com.example.techbridge.domain.member.service.MemberQueryService;
+import com.example.techbridge.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,24 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
-public class MemberController {
+public class MemberQueryController {
 
-    private final MemberService memberService;
-
-    @PostMapping
-    public ResponseEntity<MemberResponse> signUp(@Valid @RequestBody SignUpRequestWrapper request) {
-        Member savedMember = memberService.signUp(request);
-        URI location = URI.create("/api/members/" + savedMember.getId());
-        return ResponseEntity.created(location)
-            .body(new MemberResponse(savedMember));
-    }
+    private final MemberQueryService memberQueryService;
 
     @GetMapping("/{id}")
     public MemberResponse findById(@PathVariable Long id) {
-        return new MemberResponse(memberService.findById(id));
+        return new MemberResponse(memberQueryService.findById(id));
     }
 
-    @GetMapping
+    @GetMapping("/check")
     public MemberResponse findByUsernameAndEmail(@RequestParam(required = false) String username,
         @RequestParam(required = false) String email) {
 
@@ -46,13 +39,13 @@ public class MemberController {
         }
 
         Member m = (username != null)
-            ? memberService.findByUsername(username)
-            : memberService.findByEmail(email);
+            ? memberQueryService.findByUsername(username)
+            : memberQueryService.findByEmail(email);
 
         return new MemberResponse(m);
     }
 
-    @RequestMapping(method = RequestMethod.HEAD)
+    @RequestMapping(path = "/check", method = RequestMethod.HEAD)
     public ResponseEntity<Void> exists(@RequestParam(required = false) String username,
         @RequestParam(required = false) String email) {
 
@@ -60,9 +53,20 @@ public class MemberController {
             throw new IllegalArgumentException("username, email 중 하나는 필수 입력 사항입니다.");
         }
 
-        boolean exists = (username != null) ? memberService.existsByUsername(username)
-            : memberService.existsByEmail(email);
+        boolean exists = (username != null) ? memberQueryService.existsByUsername(username)
+            : memberQueryService.existsByEmail(email);
 
         return exists ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping
+    public CommonResponse<Page<MemberDetailResponse>> findAll(
+        @RequestParam(required = false) Role role,
+        @PageableDefault(size = 10) Pageable pageable
+    ) {
+
+        return CommonResponse.success(
+            memberQueryService.findAll(role, pageable)
+        );
     }
 }

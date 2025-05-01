@@ -1,0 +1,31 @@
+package com.example.techbridge.domain.member.controller;
+
+import com.example.techbridge.domain.member.dto.MemberResponse;
+import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
+import com.example.techbridge.domain.member.entity.Member;
+import com.example.techbridge.domain.member.service.MemberCommandService;
+import jakarta.validation.Valid;
+import java.net.URI;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/members")
+public class MemberCommandController {
+
+    private final MemberCommandService memberCommandService;
+
+    @PostMapping
+    public ResponseEntity<MemberResponse> signUp(@Valid @RequestBody SignUpRequestWrapper request) {
+        Member savedMember = memberCommandService.signUp(request);
+        URI location = URI.create("/api/members/" + savedMember.getId());
+        return ResponseEntity.created(location)
+            .body(new MemberResponse(savedMember));
+    }
+
+}
