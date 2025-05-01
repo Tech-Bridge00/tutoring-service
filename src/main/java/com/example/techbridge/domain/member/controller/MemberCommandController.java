@@ -1,6 +1,7 @@
 package com.example.techbridge.domain.member.controller;
 
 import com.example.techbridge.domain.member.dto.MemberResponse;
+import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.service.MemberCommandService;
@@ -8,6 +9,8 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,4 +31,11 @@ public class MemberCommandController {
             .body(new MemberResponse(savedMember));
     }
 
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<Void> changePassword(@PathVariable Long id,
+        @Valid @RequestBody PasswordChangeRequest request) {
+
+        memberCommandService.changePassword(id, request);
+        return ResponseEntity.noContent().build();
+    }
 }
