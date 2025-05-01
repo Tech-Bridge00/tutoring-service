@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TutorRepository extends JpaRepository<Tutor, Long> {
 
-    Optional<Tutor> findByMember_Id(Long memberId);
+    Optional<Tutor> findByMemberId(Long memberId);
 }
