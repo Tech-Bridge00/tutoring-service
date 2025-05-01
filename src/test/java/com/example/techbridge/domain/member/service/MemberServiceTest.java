@@ -3,6 +3,7 @@ package com.example.techbridge.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
 import com.example.techbridge.domain.member.dto.StudentInfoRequest;
@@ -13,6 +14,9 @@ import com.example.techbridge.domain.member.entity.Member.Role;
 import com.example.techbridge.domain.member.entity.Student;
 import com.example.techbridge.domain.member.entity.Tutor;
 import com.example.techbridge.domain.member.exception.EmailAlreadyExistsException;
+import com.example.techbridge.domain.member.exception.SameAsOldPasswordException;
+import com.example.techbridge.domain.member.exception.StudentInfoRequiredException;
+import com.example.techbridge.domain.member.exception.TutorInfoRequiredException;
 import com.example.techbridge.domain.member.exception.UsernameAlreadyExistsException;
 import com.example.techbridge.domain.member.repository.MemberRepository;
 import com.example.techbridge.domain.member.repository.StudentRepository;
@@ -154,7 +158,7 @@ class MemberServiceTest {
             .build();
 
         assertThatThrownBy(() -> memberCommandService.signUp(wrapper))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(StudentInfoRequiredException.class)
             .hasMessageContaining("추가 정보");
     }
 
@@ -166,7 +170,7 @@ class MemberServiceTest {
             .build();
 
         assertThatThrownBy(() -> memberCommandService.signUp(wrapper))
-            .isInstanceOf(IllegalArgumentException.class)
+            .isInstanceOf(TutorInfoRequiredException.class)
             .hasMessageContaining("추가 정보");
     }
 
@@ -175,16 +179,33 @@ class MemberServiceTest {
     void changePassword_success() {
         // given
         SignUpRequestWrapper wrapper = initStudent();
-        memberCommandService.signUp(wrapper);
+        Member savedMember = memberCommandService.signUp(wrapper);
+        Long memberId = savedMember.getId();
 
         // when
-        memberCommandService.changePassword(wrapper.getMember().getUsername(), "test1234",
-            "newpassword1234");
+        PasswordChangeRequest request = new PasswordChangeRequest("test1234", "newPwd5678");
+        memberCommandService.changePassword(memberId, request);
 
         // then
-        Member changed = memberRepository.findByUsername(wrapper.getMember().getUsername())
-            .orElseThrow();
-        assertThat(passwordEncoder.matches("newpassword1234", changed.getPassword())).isTrue();
+        Member changed = memberRepository.findById(memberId).orElseThrow();
+        assertThat(passwordEncoder.matches("newPwd5678", changed.getPassword())).isTrue();
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경 실패")
+    void changePassword_fail() {
+        // given
+        SignUpRequestWrapper wrapper = initStudent();
+        Member savedMember = memberCommandService.signUp(wrapper);
+        Long memberId = savedMember.getId();
+
+        // when
+        PasswordChangeRequest request = new PasswordChangeRequest("test1234", "test1234");
+
+
+        // then
+        assertThatThrownBy(() -> memberCommandService.changePassword(memberId, request))
+            .isInstanceOf(SameAsOldPasswordException.class);
     }
 
     @Test
