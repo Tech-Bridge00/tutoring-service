@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.entity;
 
+import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -72,6 +74,26 @@ public class Member extends BaseTimeEntity {
 
     public enum Gender {
         M, F
+    }
+
+    public static Member of(SignUpRequest request, UnaryOperator<String> encoder) {
+        return Member.builder()
+            .username(request.getUsername())
+            .password(encoder.apply(request.getPassword()))
+            .name(request.getName())
+            .nickname(request.getNickname())
+            .age(request.getAge())
+            .gender(request.getGender())
+            .contact(request.getContact())
+            .email(request.getEmail())
+            .profileImage(request.getProfileImage())
+            .status(request.getStatus())
+            .role(request.getRole())
+            .location(request.getLocation())
+            .totalRating(0L)
+            .totalMatchCount(0L)
+            .totalClassCount(0L)
+            .build();
     }
 
     public void encodePassword(String encodedPassword) {
