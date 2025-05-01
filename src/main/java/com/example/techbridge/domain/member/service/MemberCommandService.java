@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberService {
+public class MemberCommandService {
 
     private final MemberRepository memberRepository;
     private final StudentService studentService;
@@ -38,7 +38,6 @@ public class MemberService {
             Role.TUTOR, (m, w) -> tutorService.saveTutorInfo(m, w.getTutor())
         );
     }
-
 
     @Transactional
     public Member signUp(SignUpRequestWrapper wrapper) {
@@ -64,7 +63,6 @@ public class MemberService {
         return saved;
     }
 
-
     @Transactional
     public void changePassword(String username, String currentPassword, String newPassword) {
         Member member = memberRepository.findByUsername(username)
@@ -75,29 +73,6 @@ public class MemberService {
         }
 
         member.encodePassword(passwordEncoder.encode(newPassword));
-    }
-
-    public Member findById(Long id) {
-        return memberRepository.findById(id)
-            .orElseThrow(MemberNotFoundException::new);
-    }
-
-    public Member findByUsername(String username) {
-        return memberRepository.findByUsername(username)
-            .orElseThrow(MemberNotFoundException::new);
-    }
-
-    public Member findByEmail(String email) {
-        return memberRepository.findByEmail(email)
-            .orElseThrow(MemberNotFoundException::new);
-    }
-
-    public boolean existsByUsername(String username) {
-        return memberRepository.existsByUsername(username);
-    }
-
-    public boolean existsByEmail(String email) {
-        return memberRepository.existsByEmail(email);
     }
 
     private void validateDuplicateUsername(String username) {
