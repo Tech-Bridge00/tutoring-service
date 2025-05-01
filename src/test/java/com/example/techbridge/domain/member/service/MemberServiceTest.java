@@ -34,7 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberServiceTest {
 
     @Autowired
-    private MemberService memberService;
+    private MemberCommandService memberCommandService;
+
+    @Autowired
+    private MemberQueryService memberQueryService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -119,7 +122,7 @@ class MemberServiceTest {
     @DisplayName("STUDENT 가입 성공")
     void signUp_student_success() {
         // when
-        Member saved = memberService.signUp(initStudent());
+        Member saved = memberCommandService.signUp(initStudent());
 
         // then
         Optional<Student> findStudent = studentRepository.findByMemberId(saved.getId());
@@ -133,7 +136,7 @@ class MemberServiceTest {
     @DisplayName("TUTOR 가입 성공")
     void signUp_tutor_success() {
         // when
-        Member saved = memberService.signUp(initTutor());
+        Member saved = memberCommandService.signUp(initTutor());
 
         // then
         Optional<Tutor> findTutor = tutorRepository.findByMemberId(saved.getId());
@@ -150,7 +153,7 @@ class MemberServiceTest {
             .member(initStudent().getMember())
             .build();
 
-        assertThatThrownBy(() -> memberService.signUp(wrapper))
+        assertThatThrownBy(() -> memberCommandService.signUp(wrapper))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("추가 정보");
     }
@@ -162,7 +165,7 @@ class MemberServiceTest {
             .member(initTutor().getMember())
             .build();
 
-        assertThatThrownBy(() -> memberService.signUp(wrapper))
+        assertThatThrownBy(() -> memberCommandService.signUp(wrapper))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("추가 정보");
     }
@@ -172,10 +175,10 @@ class MemberServiceTest {
     void changePassword_success() {
         // given
         SignUpRequestWrapper wrapper = initStudent();
-        memberService.signUp(wrapper);
+        memberCommandService.signUp(wrapper);
 
         // when
-        memberService.changePassword(wrapper.getMember().getUsername(), "test1234",
+        memberCommandService.changePassword(wrapper.getMember().getUsername(), "test1234",
             "newpassword1234");
 
         // then
@@ -189,7 +192,7 @@ class MemberServiceTest {
     void duplicate_username_fail() {
         // given
         SignUpRequestWrapper signedUp = initStudent();
-        memberService.signUp(signedUp);
+        memberCommandService.signUp(signedUp);
 
         // when
         SignUpRequest dupSignedUp = signedUp.getMember()
@@ -204,7 +207,7 @@ class MemberServiceTest {
                 .status("휴학").build())
             .build();
 
-        assertThatThrownBy(() -> memberService.signUp(duplicated))
+        assertThatThrownBy(() -> memberCommandService.signUp(duplicated))
             .isInstanceOf(UsernameAlreadyExistsException.class);
     }
 
@@ -213,7 +216,7 @@ class MemberServiceTest {
     void duplicate_email_fail() {
         // given
         SignUpRequestWrapper signedUp = initStudent();
-        memberService.signUp(signedUp);
+        memberCommandService.signUp(signedUp);
 
         // when
         SignUpRequest dupSignedUp = signedUp.getMember()
@@ -228,7 +231,7 @@ class MemberServiceTest {
                 .status("휴학").build())
             .build();
 
-        assertThatThrownBy(() -> memberService.signUp(duplicated))
+        assertThatThrownBy(() -> memberCommandService.signUp(duplicated))
             .isInstanceOf(EmailAlreadyExistsException.class);
     }
 
@@ -239,17 +242,17 @@ class MemberServiceTest {
         SignUpRequestWrapper wrapper = initTutor();
 
         // when
-        memberService.signUp(wrapper);
+        memberCommandService.signUp(wrapper);
         String username = wrapper.getMember().getUsername();
         String email = wrapper.getMember().getEmail();
 
         // then
-        assertThat(memberService.findByUsername(username).getEmail()).isEqualTo(email);
-        assertThat(memberService.findByEmail(email).getUsername()).isEqualTo(username);
-        assertThat(memberService.existsByUsername(username)).isTrue();
-        assertThat(memberService.existsByEmail(email)).isTrue();
+        assertThat(memberQueryService.findByUsername(username).getEmail()).isEqualTo(email);
+        assertThat(memberQueryService.findByEmail(email).getUsername()).isEqualTo(username);
+        assertThat(memberQueryService.existsByUsername(username)).isTrue();
+        assertThat(memberQueryService.existsByEmail(email)).isTrue();
 
-        assertThat(memberService.existsByUsername("nobody")).isFalse();
-        assertThat(memberService.existsByEmail("nobody@email.com")).isFalse();
+        assertThat(memberQueryService.existsByUsername("nobody")).isFalse();
+        assertThat(memberQueryService.existsByEmail("nobody@email.com")).isFalse();
     }
 }
