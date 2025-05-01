@@ -4,6 +4,7 @@ import com.example.techbridge.domain.member.dto.MemberDetailResponse;
 import com.example.techbridge.domain.member.dto.MemberResponse;
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.entity.Member.Role;
+import com.example.techbridge.domain.member.exception.InvalidMemberQueryException;
 import com.example.techbridge.domain.member.service.MemberQueryService;
 import com.example.techbridge.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class MemberQueryController {
         @RequestParam(required = false) String email) {
 
         if (username == null && email == null) {
-            throw new IllegalArgumentException("username, email 중 하나는 필수 입력 사항입니다.");
+            throw new InvalidMemberQueryException();
         }
 
         Member m = (username != null)
@@ -50,7 +51,7 @@ public class MemberQueryController {
         @RequestParam(required = false) String email) {
 
         if (username == null && email == null) {
-            throw new IllegalArgumentException("username, email 중 하나는 필수 입력 사항입니다.");
+            throw new InvalidMemberQueryException();
         }
 
         boolean exists = (username != null) ? memberQueryService.existsByUsername(username)
