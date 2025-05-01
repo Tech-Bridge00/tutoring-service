@@ -2,6 +2,7 @@ package com.example.techbridge.domain.member.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class TutorInfoRequest {
     @NotBlank(message = "직무는 필수입니다.")
     private String jobTitle;
 
+    @Size(max = 2083)
     private String portfolioUrl;
 
     @NotNull(message = "총 경력은 필수입니다.")
