@@ -77,6 +77,11 @@ public class MemberService {
         member.encodePassword(passwordEncoder.encode(newPassword));
     }
 
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+            .orElseThrow(MemberNotFoundException::new);
+    }
+
     public Member findByUsername(String username) {
         return memberRepository.findByUsername(username)
             .orElseThrow(MemberNotFoundException::new);
