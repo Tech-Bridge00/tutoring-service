@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.service;
 
+import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
 import com.example.techbridge.domain.member.entity.Member;
@@ -7,6 +8,9 @@ import com.example.techbridge.domain.member.entity.Member.Role;
 import com.example.techbridge.domain.member.exception.EmailAlreadyExistsException;
 import com.example.techbridge.domain.member.exception.InvalidMemberPasswordException;
 import com.example.techbridge.domain.member.exception.MemberNotFoundException;
+import com.example.techbridge.domain.member.exception.SameAsOldPasswordException;
+import com.example.techbridge.domain.member.exception.StudentInfoRequiredException;
+import com.example.techbridge.domain.member.exception.TutorInfoRequiredException;
 import com.example.techbridge.domain.member.exception.UsernameAlreadyExistsException;
 import com.example.techbridge.domain.member.repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
@@ -50,11 +54,11 @@ public class MemberCommandService {
         Member saved = memberRepository.save(member);
 
         if (saved.getRole() == Role.STUDENT && wrapper.getStudent() == null) {
-            throw new IllegalArgumentException("학생 추가 정보가 필요합니다.");
+            throw new StudentInfoRequiredException();
         }
 
         if (saved.getRole() == Role.TUTOR && wrapper.getTutor() == null) {
-            throw new IllegalArgumentException("튜터 추가 정보가 필요합니다.");
+            throw new TutorInfoRequiredException();
         }
 
         postProcessors.getOrDefault(saved.getRole(), NOOP)
@@ -64,15 +68,19 @@ public class MemberCommandService {
     }
 
     @Transactional
-    public void changePassword(String username, String currentPassword, String newPassword) {
-        Member member = memberRepository.findByUsername(username)
+    public void changePassword(Long id, PasswordChangeRequest request) {
+        Member member = memberRepository.findById(id)
             .orElseThrow(MemberNotFoundException::new);
 
-        if (!passwordEncoder.matches(currentPassword, member.getPassword())) {
+        if (!passwordEncoder.matches(request.getCurrentPassword(), member.getPassword())) {
             throw new InvalidMemberPasswordException();
         }
 
-        member.encodePassword(passwordEncoder.encode(newPassword));
+        if (passwordEncoder.matches(request.getNewPassword(), member.getPassword())) {
+            throw new SameAsOldPasswordException();
+        }
+
+        member.encodePassword(passwordEncoder.encode(request.getNewPassword()));
     }
 
     private void validateDuplicateUsername(String username) {
