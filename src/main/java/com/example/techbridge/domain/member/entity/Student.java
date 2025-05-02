@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.entity;
 
+import com.example.techbridge.domain.member.dto.StudentUpdateRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,4 +31,18 @@ public class Student extends BaseTimeEntity {
 
     private String interestedField;
     private String status;
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public void updateProfile(StudentUpdateRequest request) {
+        if (request.getInterestedField() != null) {
+            this.interestedField = request.getInterestedField();
+        }
+
+        if (request.getStatus() != null) {
+            this.status = request.getStatus();
+        }
+    }
 }

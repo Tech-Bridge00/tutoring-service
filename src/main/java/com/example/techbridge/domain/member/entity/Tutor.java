@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.entity;
 
+import com.example.techbridge.domain.member.dto.TutorUpdateRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,4 +34,30 @@ public class Tutor extends BaseTimeEntity {
     private String portfolioUrl;
     private Integer totalExperience;
     private Boolean currentlyEmployed;
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
+    public void updateProfile(TutorUpdateRequest request) {
+        if (request.getIntroduction() != null) {
+            this.introduction = request.getIntroduction();
+        }
+
+        if (request.getJobTitle() != null) {
+            this.jobTitle = request.getJobTitle();
+        }
+
+        if (request.getPortfolioUrl() != null) {
+            this.portfolioUrl = request.getPortfolioUrl();
+        }
+
+        if (request.getTotalExperience() != null) {
+            this.totalExperience = request.getTotalExperience();
+        }
+
+        if (request.getCurrentlyEmployed() != null) {
+            this.currentlyEmployed = request.getCurrentlyEmployed();
+        }
+    }
 }

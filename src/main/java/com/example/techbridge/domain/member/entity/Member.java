@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.entity;
 
+import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -102,6 +103,42 @@ public class Member extends BaseTimeEntity {
             .totalMatchCount(0L)
             .totalClassCount(0L)
             .build();
+    }
+
+    public void setTutor(Tutor tutor) {
+        this.tutor = tutor;
+        if (tutor.getMember() != this) {
+            tutor.setMember(this);
+        }
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+        if (student.getMember() != this) {
+            student.setMember(this);
+        }
+    }
+
+    public void updateProfile(MemberUpdateRequest request) {
+        if (request.getNickname() != null) {
+            this.nickname = request.getNickname();
+        }
+
+        if (request.getEmail() != null) {
+            this.email = request.getEmail();
+        }
+
+        if (request.getAge() != null) {
+            this.age = request.getAge();
+        }
+
+        if (request.getContact() != null) {
+            this.contact = request.getContact();
+        }
+
+        if (request.getLocation() != null) {
+            this.location = request.getLocation();
+        }
     }
 
     public void encodePassword(String encodedPassword) {
