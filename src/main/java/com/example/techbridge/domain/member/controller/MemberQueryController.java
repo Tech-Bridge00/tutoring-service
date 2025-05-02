@@ -6,7 +6,7 @@ import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.entity.Member.Role;
 import com.example.techbridge.domain.member.exception.InvalidMemberQueryException;
 import com.example.techbridge.domain.member.service.MemberQueryService;
-import com.example.techbridge.global.common.CommonResponse;
+import com.example.techbridge.global.common.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +27,8 @@ public class MemberQueryController {
     private final MemberQueryService memberQueryService;
 
     @GetMapping("/{id}")
-    public MemberResponse findById(@PathVariable Long id) {
-        return new MemberResponse(memberQueryService.findById(id));
+    public MemberDetailResponse findById(@PathVariable Long id) {
+        return MemberDetailResponse.of(memberQueryService.findById(id));
     }
 
     @GetMapping("/check")
@@ -61,13 +61,12 @@ public class MemberQueryController {
     }
 
     @GetMapping
-    public CommonResponse<Page<MemberDetailResponse>> findAll(
+    public PageResponse<MemberDetailResponse> findAll(
         @RequestParam(required = false) Role role,
         @PageableDefault(size = 10) Pageable pageable
     ) {
 
-        return CommonResponse.success(
-            memberQueryService.findAll(role, pageable)
-        );
+        Page<MemberDetailResponse> result = memberQueryService.findAll(role, pageable);
+        return PageResponse.from(result);
     }
 }
