@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.controller;
 
+import com.example.techbridge.auth.dto.LoginMember;
 import com.example.techbridge.domain.member.dto.MemberDetailResponse;
 import com.example.techbridge.domain.member.dto.MemberUpdateWrapper;
 import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
@@ -26,7 +27,8 @@ public class MemberCommandController {
     private final MemberCommandService memberCommandService;
 
     @PostMapping
-    public ResponseEntity<MemberDetailResponse> signUp(@Valid @RequestBody SignUpRequestWrapper request) {
+    public ResponseEntity<MemberDetailResponse> signUp(
+        @Valid @RequestBody SignUpRequestWrapper request) {
         Member savedMember = memberCommandService.signUp(request);
         URI location = URI.create("/api/members/" + savedMember.getId());
         return ResponseEntity.created(location)
@@ -44,7 +46,7 @@ public class MemberCommandController {
     @PatchMapping("/{id}")
     public MemberDetailResponse updateMemberInfo(@PathVariable Long id,
         @Valid @RequestBody MemberUpdateWrapper request,
-        @AuthenticationPrincipal Member loginMember) {
+        @AuthenticationPrincipal LoginMember loginMember) {
         Member updatedMember = memberCommandService.updateMember(id, request, loginMember.getId());
         return MemberDetailResponse.of(updatedMember);
     }
