@@ -7,16 +7,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
+    @EntityGraph(attributePaths = {"student", "tutor"})
     Optional<Member> findByUsername(String username);
 
+    @EntityGraph(attributePaths = {"student", "tutor"})
     Optional<Member> findByEmail(String email);
 
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    @EntityGraph(attributePaths = {"student", "tutor"})
+    Optional<Member> findWithDetailsById(@Param("id") Long id);
 
     @EntityGraph(attributePaths = {"student", "tutor"})
     Page<Member> findAll(Pageable pageable);
