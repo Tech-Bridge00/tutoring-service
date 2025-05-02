@@ -1,6 +1,7 @@
 package com.example.techbridge.domain.member.dto;
 
 import com.example.techbridge.domain.member.entity.Member;
+import com.example.techbridge.domain.member.entity.Member.Gender;
 import com.example.techbridge.domain.member.entity.Member.Role;
 import java.util.Optional;
 import lombok.Builder;
@@ -13,7 +14,18 @@ public class MemberDetailResponse {
     private Long id;
     private String username;
     private String name;
+    private String nickname;
+    private Integer age;
+    private Gender gender;
+    private String contact;
+    private String email;
+    private String profileImage;
     private Role role;
+    private String status;
+    private String location;
+    private Long totalRating;
+    private Long totalMatchCount;
+    private Long totalClassCount;
 
     private StudentPart student;
     private TutorPart tutor;
@@ -42,7 +54,18 @@ public class MemberDetailResponse {
             .id(m.getId())
             .username(m.getUsername())
             .name(m.getName())
+            .nickname(m.getNickname())
+            .age(m.getAge())
+            .gender(m.getGender())
+            .contact(m.getContact())
+            .email(m.getEmail())
+            .profileImage(m.getProfileImage())
             .role(m.getRole())
+            .status(m.getStatus())
+            .location(m.getLocation())
+            .totalRating(m.getTotalRating())
+            .totalMatchCount(m.getTotalMatchCount())
+            .totalClassCount(m.getTotalClassCount())
             .student(Optional.ofNullable(m.getStudent())
                 .map(s -> StudentPart.builder()
                     .interestedField(s.getInterestedField())
@@ -53,6 +76,7 @@ public class MemberDetailResponse {
                 .map(t -> TutorPart.builder()
                     .introduction(t.getIntroduction())
                     .jobTitle(t.getJobTitle())
+                    .portfolioUrl(t.getPortfolioUrl())
                     .totalExperience(t.getTotalExperience())
                     .currentlyEmployed(t.getCurrentlyEmployed())
                     .build())
