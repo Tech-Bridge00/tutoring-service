@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -135,6 +136,11 @@ class AuthControllerTest {
             .getResponse()
             .getContentAsString();
 
+        String accessToken = objectMapper.readTree(loginResponse)
+            .path("data")
+            .path("accessToken")
+            .asText();
+
         String refreshToken = objectMapper.readTree(loginResponse)
             .path("data")
             .path("refreshToken")
@@ -143,6 +149,7 @@ class AuthControllerTest {
         RefreshRequest logoutRequest = new RefreshRequest(refreshToken);
 
         mockMvc.perform(post("/auth/logout")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(logoutRequest)))
             .andExpect(status().isOk())
