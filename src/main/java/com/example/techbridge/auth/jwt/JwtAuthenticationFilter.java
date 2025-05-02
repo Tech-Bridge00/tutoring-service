@@ -1,8 +1,7 @@
 package com.example.techbridge.auth.jwt;
 
-import com.example.techbridge.domain.member.entity.Member;
-import com.example.techbridge.domain.member.exception.MemberNotFoundException;
-import com.example.techbridge.domain.member.repository.MemberRepository;
+import com.example.techbridge.auth.dto.LoginMember;
+import com.example.techbridge.domain.member.entity.Member.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,14 +21,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtTokenProvider tokenProvider;
-    private final MemberRepository memberRepository;
     private final List<String> whiteList;
 
     public JwtAuthenticationFilter(JwtTokenProvider tokenProvider,
-        MemberRepository memberRepository,
         List<String> whiteList) {
         this.tokenProvider = tokenProvider;
-        this.memberRepository = memberRepository;
         this.whiteList = whiteList;
     }
 
@@ -46,15 +42,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (tokenProvider.isValid(token)) {
                 Long memberId = tokenProvider.extractMemberId(token);
-
-                Member member = memberRepository.findById(memberId)
-                    .orElseThrow(MemberNotFoundException::new);
+                Role role = tokenProvider.extractRole(token);
+                LoginMember loginMember = new LoginMember(memberId, role);
 
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                        member,
+                        loginMember,
                         null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + member.getRole().name())));
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role.name())));
 
                 authentication.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request));
