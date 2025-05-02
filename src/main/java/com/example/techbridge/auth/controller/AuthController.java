@@ -39,9 +39,9 @@ public class AuthController {
         }
 
         String accessToken = jwtTokenProvider.generateAccessToken(member.getId(),
-            member.getRole().toString());
+            member.getRole().name());
         String refreshToken = jwtTokenProvider.generateRefreshToken(member.getId(),
-            member.getRole().toString());
+            member.getRole().name());
 
         refreshTokenRepository.save(member.getId(), refreshToken);
 
