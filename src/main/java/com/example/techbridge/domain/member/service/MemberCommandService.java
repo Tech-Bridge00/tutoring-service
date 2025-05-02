@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.service;
 
+import com.example.techbridge.domain.member.dto.MemberUpdateWrapper;
 import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
@@ -11,6 +12,7 @@ import com.example.techbridge.domain.member.exception.MemberNotFoundException;
 import com.example.techbridge.domain.member.exception.SameAsOldPasswordException;
 import com.example.techbridge.domain.member.exception.StudentInfoRequiredException;
 import com.example.techbridge.domain.member.exception.TutorInfoRequiredException;
+import com.example.techbridge.domain.member.exception.UnauthorizedException;
 import com.example.techbridge.domain.member.exception.UsernameAlreadyExistsException;
 import com.example.techbridge.domain.member.repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
@@ -81,6 +83,48 @@ public class MemberCommandService {
         }
 
         member.encodePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    @Transactional
+    public Member updateMember(Long id, MemberUpdateWrapper request, Long loginMemberId) {
+        validateSameMember(id, loginMemberId);
+
+        Member foundMember = memberRepository.findById(id)
+            .orElseThrow(MemberNotFoundException::new);
+
+        foundMember.updateProfile(request.getMember());
+
+        updateStudentInfo(request, foundMember);
+
+        updateTutorInfo(request, foundMember);
+
+        return foundMember;
+    }
+
+    private void updateTutorInfo(MemberUpdateWrapper request, Member foundMember) {
+        if (foundMember.getRole() == Role.TUTOR) {
+            if (request.getTutor() == null) {
+                throw new TutorInfoRequiredException();
+            }
+
+            tutorService.updateTutorInfo(foundMember, request.getTutor());
+        }
+    }
+
+    private void updateStudentInfo(MemberUpdateWrapper request, Member foundMember) {
+        if (foundMember.getRole() == Role.STUDENT) {
+            if (request.getStudent() == null) {
+                throw new StudentInfoRequiredException();
+            }
+
+            studentService.updateStudentInfo(foundMember, request.getStudent());
+        }
+    }
+
+    private void validateSameMember(Long id, Long loginMemberId) {
+        if (!id.equals(loginMemberId)) {
+            throw new UnauthorizedException();
+        }
     }
 
     private void validateDuplicateUsername(String username) {
