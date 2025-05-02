@@ -1,5 +1,6 @@
 package com.example.techbridge.auth.jwt;
 
+import com.example.techbridge.domain.member.entity.Member.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -62,6 +63,12 @@ public class JwtTokenProvider {
 
     public Long extractMemberId(String token) {
         return Long.parseLong(getClaims(token).getSubject());
+    }
+
+    public Role extractRole(String token) {
+        Claims claims = getClaims(token);
+        String role = claims.get("role", String.class);
+        return Role.valueOf(role);
     }
 
     public boolean isValid(String token) {
