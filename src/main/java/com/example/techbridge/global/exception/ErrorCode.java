@@ -18,6 +18,12 @@ public enum ErrorCode {
     TUTOR_INFO_REQUEST("M007", "튜터 추가 정보가 필요합니다.", HttpStatus.BAD_REQUEST),
     INVALID_MEMBER_QUERY("M008", "username 또는 email 중 하나는 반드시 필요합니다.", HttpStatus.BAD_REQUEST),
 
+    // ====== AUTH ======
+    INVALID_TOKEN("A001", "유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST),
+    REFRESH_TOKEN_NOT_FOUND("A002", "Refresh Token이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    UNAUTHORIZED("A003", "접근 권한이 필요합니다.", HttpStatus.FORBIDDEN),
+    UNAUTHENTICATED("A004", "로그인이 필요합니다.", HttpStatus.UNAUTHORIZED),
+
     // ====== COMMON ======
     BAD_REQUEST("C400", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
     METHOD_NOT_ALLOWED("C405", "허용되지 않은 HTTP 메서드입니다.", HttpStatus.METHOD_NOT_ALLOWED),
