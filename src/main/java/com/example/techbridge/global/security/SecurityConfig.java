@@ -4,7 +4,6 @@ import com.example.techbridge.auth.handler.CustomAccessDeniedHandler;
 import com.example.techbridge.auth.handler.CustomAuthenticationEntryPoint;
 import com.example.techbridge.auth.jwt.JwtAuthenticationFilter;
 import com.example.techbridge.auth.jwt.JwtTokenProvider;
-import com.example.techbridge.domain.member.repository.MemberRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,18 +23,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
 
     @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider,
-        MemberRepository memberRepository,
         CustomAccessDeniedHandler accessDeniedHandler,
         CustomAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.memberRepository = memberRepository;
         this.accessDeniedHandler = accessDeniedHandler;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
@@ -45,7 +41,7 @@ public class SecurityConfig {
         List<String> whiteList = List.of(
             "/auth/login", "/auth/refresh"
         );
-        return new JwtAuthenticationFilter(jwtTokenProvider, memberRepository, whiteList);
+        return new JwtAuthenticationFilter(jwtTokenProvider, whiteList);
     }
 
     @Bean
