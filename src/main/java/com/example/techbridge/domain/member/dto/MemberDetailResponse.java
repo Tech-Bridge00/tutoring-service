@@ -3,7 +3,8 @@ package com.example.techbridge.domain.member.dto;
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.entity.Member.Gender;
 import com.example.techbridge.domain.member.entity.Member.Role;
-import java.util.Optional;
+import com.example.techbridge.domain.member.entity.Student;
+import com.example.techbridge.domain.member.entity.Tutor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -50,6 +51,9 @@ public class MemberDetailResponse {
     }
 
     public static MemberDetailResponse of(Member m) {
+        Student student = m.getStudent();
+        Tutor tutor = m.getTutor();
+
         return MemberDetailResponse.builder()
             .id(m.getId())
             .username(m.getUsername())
@@ -66,21 +70,17 @@ public class MemberDetailResponse {
             .totalRating(m.getTotalRating())
             .totalMatchCount(m.getTotalMatchCount())
             .totalClassCount(m.getTotalClassCount())
-            .student(Optional.ofNullable(m.getStudent())
-                .map(s -> StudentPart.builder()
-                    .interestedField(s.getInterestedField())
-                    .status(s.getStatus())
-                    .build())
-                .orElse(null))
-            .tutor(Optional.ofNullable(m.getTutor())
-                .map(t -> TutorPart.builder()
-                    .introduction(t.getIntroduction())
-                    .jobTitle(t.getJobTitle())
-                    .portfolioUrl(t.getPortfolioUrl())
-                    .totalExperience(t.getTotalExperience())
-                    .currentlyEmployed(t.getCurrentlyEmployed())
-                    .build())
-                .orElse(null))
+            .student(student != null ? StudentPart.builder()
+                .interestedField(student.getInterestedField())
+                .status(student.getStatus())
+                .build() : null)
+            .tutor(tutor != null ? TutorPart.builder()
+                .introduction(tutor.getIntroduction())
+                .jobTitle(tutor.getJobTitle())
+                .portfolioUrl(tutor.getPortfolioUrl())
+                .totalExperience(tutor.getTotalExperience())
+                .currentlyEmployed(tutor.getCurrentlyEmployed())
+                .build() : null)
             .build();
     }
 }
