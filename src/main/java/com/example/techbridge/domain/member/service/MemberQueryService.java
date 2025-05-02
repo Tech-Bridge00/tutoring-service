@@ -19,8 +19,15 @@ public class MemberQueryService {
     private final MemberRepository memberRepository;
 
     public Member findById(Long id) {
-        return memberRepository.findById(id)
+        Member member = memberRepository.findWithDetailsById(id)
             .orElseThrow(MemberNotFoundException::new);
+
+        if (member.getRole() == Role.STUDENT && member.getStudent() == null ||
+            member.getRole() == Role.TUTOR && member.getTutor() == null) {
+            throw new MemberNotFoundException();
+        }
+
+        return member;
     }
 
     public Member findByUsername(String username) {
