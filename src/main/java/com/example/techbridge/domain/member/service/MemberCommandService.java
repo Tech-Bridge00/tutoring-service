@@ -72,9 +72,11 @@ public class MemberCommandService {
     }
 
     @Transactional
-    public void changePassword(Long id, PasswordChangeRequest request) {
+    public void changePassword(Long id, PasswordChangeRequest request, Long loginMemberId) {
         Member member = memberRepository.findById(id)
             .orElseThrow(MemberNotFoundException::new);
+
+        validateSameMember(id, loginMemberId);
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), member.getPassword())) {
             throw new InvalidMemberPasswordException();

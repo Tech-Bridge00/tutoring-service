@@ -37,9 +37,10 @@ public class MemberCommandController {
 
     @PatchMapping("/{id}/password")
     public ResponseEntity<Void> changePassword(@PathVariable Long id,
-        @Valid @RequestBody PasswordChangeRequest request) {
+        @Valid @RequestBody PasswordChangeRequest request,
+        @AuthenticationPrincipal LoginMember loginMember) {
 
-        memberCommandService.changePassword(id, request);
+        memberCommandService.changePassword(id, request, loginMember.getId());
         return ResponseEntity.noContent().build();
     }
 
