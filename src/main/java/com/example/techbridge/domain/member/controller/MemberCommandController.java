@@ -12,6 +12,7 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,5 +51,12 @@ public class MemberCommandController {
         @AuthenticationPrincipal LoginMember loginMember) {
         Member updatedMember = memberCommandService.updateMember(id, request, loginMember.getId());
         return MemberDetailResponse.of(updatedMember);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMember(@PathVariable Long id,
+        @AuthenticationPrincipal LoginMember loginMember) {
+        memberCommandService.deleteMember(id, loginMember.getId());
+        return ResponseEntity.noContent().build();
     }
 }
