@@ -89,10 +89,10 @@ public class MemberCommandService {
 
     @Transactional
     public Member updateMember(Long id, MemberUpdateWrapper request, Long loginMemberId) {
-        validateSameMember(id, loginMemberId);
-
         Member foundMember = memberRepository.findWithDetailsById(id)
             .orElseThrow(MemberNotFoundException::new);
+
+        validateSameMember(id, loginMemberId);
 
         foundMember.updateProfile(request.getMember());
 
