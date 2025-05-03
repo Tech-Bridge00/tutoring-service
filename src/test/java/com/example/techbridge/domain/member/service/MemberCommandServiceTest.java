@@ -15,6 +15,7 @@ import com.example.techbridge.domain.member.entity.Student;
 import com.example.techbridge.domain.member.entity.Tutor;
 import com.example.techbridge.domain.member.exception.EmailAlreadyExistsException;
 import com.example.techbridge.domain.member.exception.InvalidMemberPasswordException;
+import com.example.techbridge.domain.member.exception.MemberNotFoundException;
 import com.example.techbridge.domain.member.exception.SameAsOldPasswordException;
 import com.example.techbridge.domain.member.exception.StudentInfoRequiredException;
 import com.example.techbridge.domain.member.exception.TutorInfoRequiredException;
@@ -109,7 +110,8 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
         Long id = saved.getId();
 
         // when
-        memberCommandService.changePassword(id, new PasswordChangeRequest("test1234", "newpass"), id);
+        memberCommandService.changePassword(id, new PasswordChangeRequest("test1234", "newpass"),
+            id);
         Member changed = memberRepository.findById(id).orElseThrow();
 
         // then
@@ -217,5 +219,47 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
         // then
         assertThatThrownBy(() -> memberCommandService.updateMember(id, updateRequest, id + 1))
             .isInstanceOf(UnauthorizedException.class);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 성공 - 본인")
+    void deleteMember_success() {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        Long id = saved.getId();
+
+        // when
+        memberCommandService.deleteMember(id, id);
+
+        // then
+        assertThat(memberRepository.findById(id)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 본인이 아닌 경우")
+    void deleteMember_forbidden() {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        Member other = memberCommandService.signUp(initStudent());
+        Long id = saved.getId();
+        Long otherId = other.getId();
+
+        // when, then
+        assertThatThrownBy(() -> memberCommandService.deleteMember(id, otherId))
+            .isInstanceOf(UnauthorizedException.class);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 존재하지 않는 ID")
+    void deleteMember_notFound() {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        long invalidId = saved.getId() + 123;
+        long loginId = saved.getId();
+
+        // when, then
+        assertThatThrownBy(() ->
+            memberCommandService.deleteMember(invalidId, loginId)
+        ).isInstanceOf(MemberNotFoundException.class);
     }
 }

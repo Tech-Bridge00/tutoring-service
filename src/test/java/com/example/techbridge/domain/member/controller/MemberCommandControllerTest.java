@@ -1,6 +1,7 @@
 package com.example.techbridge.domain.member.controller;
 
 import static com.example.techbridge.domain.member.support.LoginRequestPostProcessor.loginMember;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -184,6 +185,45 @@ class MemberCommandControllerTest extends AbstractMemberTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             // then
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.code").value(ErrorCode.MEMBER_NOT_FOUND.getCode()));
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 성공 - 본인")
+    void deleteMember_success() throws Exception {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+
+        // when, then
+        mockMvc.perform(delete("/api/members/" + saved.getId())
+                .with(loginMember(saved)))
+            .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 본인이 아닌 경우")
+    void deleteMember_forbidden() throws Exception {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        Member other = memberCommandService.signUp(initStudent());
+
+        // when, then - other 로 로그인해서 saved 탈퇴하면 403
+        mockMvc.perform(delete("/api/members/" + saved.getId())
+                .with(loginMember(other)))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 실패 - 존재하지 않는 ID")
+    void deleteMember_notFound() throws Exception {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        long invalidId = saved.getId() + 123;
+
+        // when, then - 없는 ID 탈퇴시 404 + MEMBER_NOT_FOUND
+        mockMvc.perform(delete("/api/members/" + invalidId)
+                .with(loginMember(saved)))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.code").value(ErrorCode.MEMBER_NOT_FOUND.getCode()));
     }
