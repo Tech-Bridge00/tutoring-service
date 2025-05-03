@@ -105,6 +105,16 @@ public class MemberCommandService {
         return foundMember;
     }
 
+    @Transactional
+    public void deleteMember(Long id, Long loginMemberId) {
+        Member foundMember = memberRepository.findWithDetailsById(id)
+            .orElseThrow(MemberNotFoundException::new);
+
+        validateSameMember(id, loginMemberId);
+
+        memberRepository.delete(foundMember);
+    }
+
     private void updateTutorInfo(MemberUpdateWrapper request, Member foundMember) {
         if (foundMember.getRole() != Role.TUTOR) {
             return;
