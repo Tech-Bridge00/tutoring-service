@@ -52,8 +52,11 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
     @Test
     @DisplayName("STUDENT 가입 성공")
     void signUp_student_success() {
+        // given
         Member saved = memberCommandService.signUp(initStudent());
         Optional<Student> student = studentRepository.findByMemberId(saved.getId());
+
+        // when, then
         assertThat(student).isPresent();
         assertThat(tutorRepository.findByMemberId(saved.getId())).isEmpty();
         assertThat(passwordEncoder.matches("test1234", saved.getPassword())).isTrue();
@@ -62,8 +65,11 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
     @Test
     @DisplayName("TUTOR 가입 성공")
     void signUp_tutor_success() {
+        // given
         Member saved = memberCommandService.signUp(initTutor());
         Optional<Tutor> tutor = tutorRepository.findByMemberId(saved.getId());
+
+        // when, then
         assertThat(tutor).isPresent();
         assertThat(studentRepository.findByMemberId(saved.getId())).isEmpty();
         assertThat(passwordEncoder.matches("test1234", saved.getPassword())).isTrue();
@@ -72,9 +78,12 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
     @Test
     @DisplayName("STUDENT 추가정보 누락 예외")
     void signUp_student_missingInfo_fail() {
+        // given
         SignUpRequestWrapper wrapper = SignUpRequestWrapper.builder()
             .member(initStudent().getMember())
             .build();
+
+        // when, then
         assertThatThrownBy(() -> memberCommandService.signUp(wrapper))
             .isInstanceOf(StudentInfoRequiredException.class);
     }
@@ -82,9 +91,12 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
     @Test
     @DisplayName("TUTOR 추가정보 누락 예외")
     void signUp_tutor_missingInfo_fail() {
+        // given
         SignUpRequestWrapper wrapper = SignUpRequestWrapper.builder()
             .member(initTutor().getMember())
             .build();
+
+        // when, then
         assertThatThrownBy(() -> memberCommandService.signUp(wrapper))
             .isInstanceOf(TutorInfoRequiredException.class);
     }
@@ -92,10 +104,15 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
     @Test
     @DisplayName("비밀번호 변경 성공")
     void changePassword_success() {
+        // given
         Member saved = memberCommandService.signUp(initStudent());
         Long id = saved.getId();
-        memberCommandService.changePassword(id, new PasswordChangeRequest("test1234", "newpass"));
+
+        // when
+        memberCommandService.changePassword(id, new PasswordChangeRequest("test1234", "newpass"), id);
         Member changed = memberRepository.findById(id).orElseThrow();
+
+        // then
         assertThat(passwordEncoder.matches("newpass", changed.getPassword())).isTrue();
     }
 
@@ -109,7 +126,7 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
         PasswordChangeRequest request = new PasswordChangeRequest("wrong_password", "new_password");
 
         // when, then
-        assertThatThrownBy(() -> memberCommandService.changePassword(id, request))
+        assertThatThrownBy(() -> memberCommandService.changePassword(id, request, id))
             .isInstanceOf(InvalidMemberPasswordException.class);
     }
 
@@ -119,7 +136,7 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
         Member saved = memberCommandService.signUp(initStudent());
         Long id = saved.getId();
         PasswordChangeRequest request = new PasswordChangeRequest("test1234", "test1234");
-        assertThatThrownBy(() -> memberCommandService.changePassword(id, request))
+        assertThatThrownBy(() -> memberCommandService.changePassword(id, request, id))
             .isInstanceOf(SameAsOldPasswordException.class);
     }
 
@@ -160,6 +177,7 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
     @Test
     @DisplayName("회원 정보 수정 성공")
     void update_member_success() {
+        // given
         Member saved = memberCommandService.signUp(initStudent());
         Long id = saved.getId();
 
@@ -175,7 +193,10 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
                 .build())
             .build();
 
+        // when
         Member updated = memberCommandService.updateMember(id, updateRequest, id);
+
+        // then
         assertThat(updated.getNickname()).isEqualTo("변경닉");
         assertThat(updated.getStudent().getInterestedField()).isEqualTo("AI");
     }
@@ -183,14 +204,17 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
     @Test
     @DisplayName("다른 사용자로 수정 시도하면 예외 발생")
     void update_other_user_fail() {
+        // given
         Member saved = memberCommandService.signUp(initStudent());
         Long id = saved.getId();
 
+        // when
         MemberUpdateWrapper updateRequest = MemberUpdateWrapper.builder()
             .member(MemberUpdateRequest.builder().nickname("불가").build())
             .student(StudentUpdateRequest.builder().interestedField("X").status("X").build())
             .build();
 
+        // then
         assertThatThrownBy(() -> memberCommandService.updateMember(id, updateRequest, id + 1))
             .isInstanceOf(UnauthorizedException.class);
     }
