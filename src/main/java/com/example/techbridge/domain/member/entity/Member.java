@@ -3,6 +3,7 @@ package com.example.techbridge.domain.member.entity;
 import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,12 +19,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@SQLDelete(sql = "UPDATE member SET deleted = true WHERE id = ?")
+@SQLRestriction("deleted = false")
 public class Member extends BaseTimeEntity {
 
     @Id
@@ -71,11 +76,15 @@ public class Member extends BaseTimeEntity {
     private Long totalMatchCount;
     private Long totalClassCount;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Student student;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Tutor tutor;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean deleted = false;
 
     public enum Role {
         STUDENT, TUTOR,
