@@ -3,11 +3,15 @@ package com.example.techbridge.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
+import com.example.techbridge.domain.member.dto.MemberUpdateWrapper;
 import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
 import com.example.techbridge.domain.member.dto.StudentInfoRequest;
+import com.example.techbridge.domain.member.dto.StudentUpdateRequest;
 import com.example.techbridge.domain.member.dto.TutorInfoRequest;
+import com.example.techbridge.domain.member.dto.TutorUpdateRequest;
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.entity.Member.Gender;
 import com.example.techbridge.domain.member.entity.Member.Role;
@@ -17,6 +21,7 @@ import com.example.techbridge.domain.member.exception.EmailAlreadyExistsExceptio
 import com.example.techbridge.domain.member.exception.SameAsOldPasswordException;
 import com.example.techbridge.domain.member.exception.StudentInfoRequiredException;
 import com.example.techbridge.domain.member.exception.TutorInfoRequiredException;
+import com.example.techbridge.domain.member.exception.UnauthorizedException;
 import com.example.techbridge.domain.member.exception.UsernameAlreadyExistsException;
 import com.example.techbridge.domain.member.repository.MemberRepository;
 import com.example.techbridge.domain.member.repository.StudentRepository;
@@ -202,7 +207,6 @@ class MemberServiceTest {
         // when
         PasswordChangeRequest request = new PasswordChangeRequest("test1234", "test1234");
 
-
         // then
         assertThatThrownBy(() -> memberCommandService.changePassword(memberId, request))
             .isInstanceOf(SameAsOldPasswordException.class);
@@ -276,4 +280,138 @@ class MemberServiceTest {
         assertThat(memberQueryService.existsByUsername("nobody")).isFalse();
         assertThat(memberQueryService.existsByEmail("nobody@email.com")).isFalse();
     }
+
+    @Test
+    @DisplayName("STUDENT 정보 수정 성공")
+    void update_student_success() {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        Long id = saved.getId();
+
+        MemberUpdateWrapper updateRequest = MemberUpdateWrapper.builder()
+            .member(MemberUpdateRequest.builder()
+                .nickname("변경된닉네임")
+                .contact("01099998888")
+                .location("서울 중랑구")
+                .build())
+            .student(StudentUpdateRequest.builder()
+                .interestedField("AI 백엔드")
+                .status("졸업예정")
+                .build())
+            .build();
+
+        // when
+        Member updated = memberCommandService.updateMember(id, updateRequest, id);
+
+        // then
+        assertThat(updated.getNickname()).isEqualTo("변경된닉네임");
+        assertThat(updated.getContact()).isEqualTo("01099998888");
+        assertThat(updated.getLocation()).isEqualTo("서울 중랑구");
+        assertThat(updated.getStudent().getInterestedField()).isEqualTo("AI 백엔드");
+        assertThat(updated.getStudent().getStatus()).isEqualTo("졸업예정");
+    }
+
+    @Test
+    @DisplayName("TUTOR 정보 수정 성공")
+    void update_tutor_success() {
+        // given
+        Member saved = memberCommandService.signUp(initTutor());
+        Long id = saved.getId();
+
+        MemberUpdateWrapper updateRequest = MemberUpdateWrapper.builder()
+            .member(MemberUpdateRequest.builder()
+                .nickname("변경된튜터")
+                .contact("01022223333")
+                .location("서울 강서구")
+                .build())
+            .tutor(TutorUpdateRequest.builder()
+                .introduction("10년차 백엔드 튜터입니다.")
+                .jobTitle("시니어 개발자")
+                .portfolioUrl("https://new-portfolio.com")
+                .totalExperience(15)
+                .currentlyEmployed(false)
+                .build())
+            .build();
+
+        // when
+        Member updated = memberCommandService.updateMember(id, updateRequest, id);
+
+        // then
+        assertThat(updated.getNickname()).isEqualTo("변경된튜터");
+        assertThat(updated.getContact()).isEqualTo("01022223333");
+        assertThat(updated.getLocation()).isEqualTo("서울 강서구");
+
+        Tutor updatedTutor = updated.getTutor();
+        assertThat(updatedTutor.getIntroduction()).isEqualTo("10년차 백엔드 튜터입니다.");
+        assertThat(updatedTutor.getJobTitle()).isEqualTo("시니어 개발자");
+        assertThat(updatedTutor.getPortfolioUrl()).isEqualTo("https://new-portfolio.com");
+        assertThat(updatedTutor.getTotalExperience()).isEqualTo(15);
+        assertThat(updatedTutor.getCurrentlyEmployed()).isFalse();
+    }
+
+    @Test
+    @DisplayName("STUDENT 수정 시 student 정보 누락하면 예외 발생")
+    void update_student_missingInfo_fail() {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        Long id = saved.getId();
+
+        MemberUpdateWrapper updateRequest = MemberUpdateWrapper.builder()
+            .member(MemberUpdateRequest.builder()
+                .nickname("닉네임변경")
+                .contact("01012341234")
+                .location("서울 노원구")
+                .build())
+            .build();
+
+        // when, then
+        assertThatThrownBy(() -> memberCommandService.updateMember(id, updateRequest, id))
+            .isInstanceOf(StudentInfoRequiredException.class);
+    }
+
+    @Test
+    @DisplayName("TUTOR 수정 시 tutor 정보 누락하면 예외 발생")
+    void update_tutor_missingInfo_fail() {
+        // given
+        Member saved = memberCommandService.signUp(initTutor());
+        Long id = saved.getId();
+
+        MemberUpdateWrapper updateRequest = MemberUpdateWrapper.builder()
+            .member(MemberUpdateRequest.builder()
+                .nickname("튜터 정보 변경")
+                .contact("01077778888")
+                .location("서울 마포구")
+                .build())
+            .build();
+
+        // when, then
+        assertThatThrownBy(() -> memberCommandService.updateMember(id, updateRequest, id))
+            .isInstanceOf(TutorInfoRequiredException.class);
+    }
+
+    @Test
+    @DisplayName("본인이 아닌 다른 사용자의 정보 수정 시도 → 예외 발생")
+    void update_other_user_fail() {
+        // given
+        Member saved = memberCommandService.signUp(initStudent());
+        Long id = saved.getId();
+        Long testAuthorId = id + 9999L;
+
+        MemberUpdateWrapper updateRequest = MemberUpdateWrapper.builder()
+            .member(MemberUpdateRequest.builder()
+                .nickname("변경시도")
+                .contact("01012345678")
+                .location("서울 서초구")
+                .build())
+            .student(StudentUpdateRequest.builder()
+                .interestedField("게임 개발")
+                .status("복학예정")
+                .build())
+            .build();
+
+        // when, then
+        assertThatThrownBy(() -> memberCommandService.updateMember(id, updateRequest, testAuthorId))
+            .isInstanceOf(UnauthorizedException.class);
+    }
+
 }
