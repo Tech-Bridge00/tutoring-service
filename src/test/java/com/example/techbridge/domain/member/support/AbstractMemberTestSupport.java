@@ -1,10 +1,15 @@
 package com.example.techbridge.domain.member.support;
 
+import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
 import com.example.techbridge.domain.member.dto.StudentInfoRequest;
+import com.example.techbridge.domain.member.dto.StudentUpdateRequest;
 import com.example.techbridge.domain.member.dto.TutorInfoRequest;
+import com.example.techbridge.domain.member.dto.TutorUpdateRequest;
 import com.example.techbridge.domain.member.entity.Member;
+import com.example.techbridge.domain.member.entity.Student;
+import com.example.techbridge.domain.member.entity.Tutor;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -74,6 +79,33 @@ public abstract class AbstractMemberTestSupport {
         return SignUpRequestWrapper.builder()
             .member(memberInfo)
             .tutor(tutorInfo)
+            .build();
+    }
+
+    protected MemberUpdateRequest defaultMemberUpdate(Member member) {
+        return MemberUpdateRequest.builder()
+            .nickname(member.getNickname())
+            .contact(member.getContact())
+            .age(member.getAge())
+            .email(member.getEmail())
+            .location(member.getLocation())
+            .build();
+    }
+
+    protected StudentUpdateRequest defaultStudentUpdate(Student student) {
+        return StudentUpdateRequest.builder()
+            .interestedField(student.getInterestedField())
+            .status(student.getStatus())
+            .build();
+    }
+
+    protected TutorUpdateRequest defaultTutorUpdate(Tutor tutor) {
+        return TutorUpdateRequest.builder()
+            .introduction(tutor.getIntroduction())
+            .jobTitle(tutor.getJobTitle())
+            .portfolioUrl(tutor.getPortfolioUrl())
+            .totalExperience(tutor.getTotalExperience())
+            .currentlyEmployed(tutor.getCurrentlyEmployed())
             .build();
     }
 }
