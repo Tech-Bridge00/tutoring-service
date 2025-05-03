@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -30,6 +31,7 @@ public class Student extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @OneToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -40,10 +42,6 @@ public class Student extends BaseTimeEntity {
     @Builder.Default
     @Column(nullable = false)
     private boolean deleted = false;
-
-    public void setMember(Member member) {
-        this.member = member;
-    }
 
     public void updateProfile(StudentUpdateRequest request) {
         if (request.getInterestedField() != null) {
