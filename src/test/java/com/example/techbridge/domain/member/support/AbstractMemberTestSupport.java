@@ -22,7 +22,7 @@ public abstract class AbstractMemberTestSupport {
         String uuid = uuid();
 
         SignUpRequest memberInfo = SignUpRequest.builder()
-            .username("student_" + uuid)
+            .username("student" + uuid)
             .password("test1234")
             .name("홍길동")
             .nickname("학생_" + uuid)
@@ -50,7 +50,7 @@ public abstract class AbstractMemberTestSupport {
         String uuid = uuid();
 
         SignUpRequest memberInfo = SignUpRequest.builder()
-            .username("tutor_" + uuid)
+            .username("tutor" + uuid)
             .password("test1234")
             .name("임꺽정")
             .nickname("튜터_" + uuid)
