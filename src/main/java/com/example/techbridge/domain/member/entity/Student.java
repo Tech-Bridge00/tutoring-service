@@ -9,13 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -23,7 +23,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE student SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class Student extends BaseTimeEntity {
 
@@ -51,5 +50,10 @@ public class Student extends BaseTimeEntity {
         if (request.getStatus() != null) {
             this.status = request.getStatus();
         }
+    }
+
+    public void updateDeleted() {
+        this.deleted = true;
+        this.updateDeletedAt(LocalDateTime.now());
     }
 }

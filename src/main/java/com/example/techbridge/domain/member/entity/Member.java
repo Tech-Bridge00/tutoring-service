@@ -13,13 +13,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDateTime;
 import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -27,7 +27,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE member SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
 public class Member extends BaseTimeEntity {
 
@@ -35,7 +34,7 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 64)
+    @Column(nullable = false, unique = true, length = 128)
     private String username;
 
     @Column(nullable = false)
@@ -57,7 +56,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 11)
     private String contact;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true, length = 128)
     private String email;
 
     private String profileImage;
@@ -148,6 +147,19 @@ public class Member extends BaseTimeEntity {
         if (request.getLocation() != null) {
             this.location = request.getLocation();
         }
+    }
+
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void updateDeleted() {
+        this.deleted = true;
+        updateDeletedAt(LocalDateTime.now());
     }
 
     public void encodePassword(String encodedPassword) {
