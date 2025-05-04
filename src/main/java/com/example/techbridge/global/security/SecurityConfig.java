@@ -4,6 +4,7 @@ import com.example.techbridge.auth.handler.CustomAccessDeniedHandler;
 import com.example.techbridge.auth.handler.CustomAuthenticationEntryPoint;
 import com.example.techbridge.auth.jwt.JwtAuthenticationFilter;
 import com.example.techbridge.auth.jwt.JwtTokenProvider;
+import com.example.techbridge.auth.service.TokenBlacklistService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,15 +24,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenBlacklistService blacklistService;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
 
     @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider,
+        TokenBlacklistService blacklistService,
         CustomAccessDeniedHandler accessDeniedHandler,
         CustomAuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.blacklistService = blacklistService;
         this.accessDeniedHandler = accessDeniedHandler;
         this.authenticationEntryPoint = authenticationEntryPoint;
     }
@@ -41,7 +45,7 @@ public class SecurityConfig {
         List<String> whiteList = List.of(
             "/auth/login", "/auth/refresh"
         );
-        return new JwtAuthenticationFilter(jwtTokenProvider, whiteList);
+        return new JwtAuthenticationFilter(jwtTokenProvider, blacklistService, whiteList);
     }
 
     @Bean
