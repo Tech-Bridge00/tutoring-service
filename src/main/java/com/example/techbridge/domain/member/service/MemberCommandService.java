@@ -19,6 +19,7 @@ import com.example.techbridge.domain.member.exception.UsernameAlreadyExistsExcep
 import com.example.techbridge.domain.member.repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberCommandService {
+
+    private static final String DELETED_PREFIX = "deleted-";
+    private static final String EMAIL_DOMAIN = "@deleted.com";
 
     private final MemberRepository memberRepository;
     private final StudentService studentService;
@@ -112,7 +116,20 @@ public class MemberCommandService {
 
         validateSameMember(id, loginMemberId);
 
-        memberRepository.delete(foundMember);
+        String uuid = UUID.randomUUID().toString();
+        foundMember.updateUsername(DELETED_PREFIX + uuid);
+        foundMember.updateEmail(DELETED_PREFIX + uuid + EMAIL_DOMAIN);
+        foundMember.updateDeleted();
+
+        if (foundMember.getStudent() != null) {
+            foundMember.getStudent().updateDeleted();
+        }
+
+        if (foundMember.getTutor() != null) {
+            foundMember.getTutor().updateDeleted();
+        }
+
+        memberRepository.save(foundMember);
     }
 
     private void updateTutorInfo(MemberUpdateWrapper request, Member foundMember) {
