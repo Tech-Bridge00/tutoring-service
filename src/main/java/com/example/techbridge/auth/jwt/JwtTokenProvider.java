@@ -9,12 +9,17 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -47,7 +52,10 @@ public class JwtTokenProvider {
 
     private String generateToken(Long memberId, String role, long validity) {
         Date now = new Date();
+        String jti = UUID.randomUUID().toString();
+
         return Jwts.builder()
+            .setId(jti)
             .setSubject(memberId.toString())
             .claim("role", role)
             .setIssuedAt(now)
@@ -87,5 +95,33 @@ public class JwtTokenProvider {
             log.warn("Invalid JWT: {}", e.getMessage());
             return false;
         }
+    }
+
+    public String resolveBearer(HttpServletRequest request) {
+        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(auth) && auth.startsWith("Bearer ")) {
+            return auth.substring(7);
+        }
+
+        return null;
+    }
+
+    public String getJti(String token) {
+        return Jwts.parser()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getId();
+    }
+
+    public Duration getRemainingTTL(String token) {
+        Date exp = Jwts.parser()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getExpiration();
+        return Duration.between(Instant.now(), exp.toInstant());
     }
 }
