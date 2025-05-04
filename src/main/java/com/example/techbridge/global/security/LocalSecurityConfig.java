@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Profile({"local", "test"})
 @Configuration
-public class SecurityConfig {
+public class LocalSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenBlacklistService blacklistService;
@@ -30,7 +30,7 @@ public class SecurityConfig {
 
 
     @Autowired
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider,
+    public LocalSecurityConfig(JwtTokenProvider jwtTokenProvider,
         TokenBlacklistService blacklistService,
         CustomAccessDeniedHandler accessDeniedHandler,
         CustomAuthenticationEntryPoint authenticationEntryPoint) {
