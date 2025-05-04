@@ -1,14 +1,19 @@
 package com.example.techbridge.domain.member.controller;
 
 import com.example.techbridge.auth.dto.LoginMember;
+import com.example.techbridge.auth.jwt.JwtTokenProvider;
+import com.example.techbridge.auth.service.RefreshTokenService;
+import com.example.techbridge.auth.service.TokenBlacklistService;
 import com.example.techbridge.domain.member.dto.MemberDetailResponse;
 import com.example.techbridge.domain.member.dto.MemberUpdateWrapper;
 import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequestWrapper;
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.service.MemberCommandService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberCommandController {
 
     private final MemberCommandService memberCommandService;
+    private final RefreshTokenService refreshTokenService;
+    private final TokenBlacklistService blacklistService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping
     public ResponseEntity<MemberDetailResponse> signUp(
@@ -55,8 +63,19 @@ public class MemberCommandController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id,
-        @AuthenticationPrincipal LoginMember loginMember) {
+        @AuthenticationPrincipal LoginMember loginMember,
+        HttpServletRequest request) {
         memberCommandService.deleteMember(id, loginMember.getId());
+
+        refreshTokenService.deleteByMemberId(loginMember.getId());
+
+        String token = jwtTokenProvider.resolveBearer(request);
+        if (token != null) {
+            String jti = jwtTokenProvider.getJti(token);
+            Duration ttl = jwtTokenProvider.getRemainingTTL(token);
+            blacklistService.blacklist(jti, ttl);
+        }
+
         return ResponseEntity.noContent().build();
     }
 }
