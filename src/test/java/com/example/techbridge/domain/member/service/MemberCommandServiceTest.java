@@ -232,7 +232,9 @@ class MemberCommandServiceTest extends AbstractMemberTestSupport {
         memberCommandService.deleteMember(id, id);
 
         // then
-        assertThat(memberRepository.findById(id)).isEmpty();
+        Member foundMember = memberRepository.findById(id)
+            .orElseThrow(() -> new AssertionError("삭제된 회원이 조회되지 않아야 합니다."));
+        assertThat(foundMember.isDeleted()).isTrue();
     }
 
     @Test
