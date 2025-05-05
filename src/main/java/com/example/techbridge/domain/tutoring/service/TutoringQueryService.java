@@ -12,6 +12,7 @@ import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class TutoringQueryService {
             tutoringRepository.findPageIdListByRequester(loginId, status, pageable),
             (role == Role.TUTOR)
                 ? tutoringRepository::fetchReceiverStudent
-                : tutoringRepository::fetchRequesterTutor,
+                : tutoringRepository::fetchReceiverTutor,
             RequestTutoringSimpleResponse::from,
             pageable);
     }
@@ -49,7 +50,7 @@ public class TutoringQueryService {
         return toPage(
             tutoringRepository.findPageIdListByReceiver(loginId, status, pageable),
             (role == Role.TUTOR)
-                ? tutoringRepository::fetchReceiverStudent
+                ? tutoringRepository::fetchRequesterStudent
                 : tutoringRepository::fetchRequesterTutor,
             ReceiveTutoringSimpleResponse::from,
             pageable);
@@ -57,9 +58,8 @@ public class TutoringQueryService {
 
     // 역할 조회
     private Role getMemberRole(Long id) {
-        return memberRepository.findById(id)
-            .orElseThrow(MemberNotFoundException::new)
-            .getRole();
+        return memberRepository.findRoleOnlyById(id)
+            .orElseThrow(MemberNotFoundException::new);
     }
 
     // Tutoring 리스트 정렬 및 Page 객체로 변환
@@ -79,6 +79,7 @@ public class TutoringQueryService {
 
         List<R> content = idList.stream()
             .map(map::get)
+            .filter(Objects::nonNull)
             .map(mapper)
             .toList();
 
