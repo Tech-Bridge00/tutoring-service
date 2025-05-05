@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.entity;
 
+import com.example.techbridge.domain.tutoring.entity.Tutoring;
 import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
@@ -12,8 +13,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.UnaryOperator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -80,6 +84,12 @@ public class Member extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Tutor tutor;
+
+    @OneToMany(mappedBy = "requester")
+    private List<Tutoring> sentRequests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver")
+    private List<Tutoring> receivedRequests = new ArrayList<>();
 
     @Builder.Default
     @Column(nullable = false)
