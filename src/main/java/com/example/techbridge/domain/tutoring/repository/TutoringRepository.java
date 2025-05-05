@@ -126,4 +126,25 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         WHERE t.id IN (:ids)
         """)
     List<Tutoring> fetchRequesterTutor(@Param("ids") Collection<Long> ids);
+
+    @Query("""
+        SELECT t FROM Tutoring t
+        WHERE t.requestStatus = 'ACCEPTED'
+        AND t.startTime <= :now
+        """)
+    List<Tutoring> findAcceptedList(@Param("now") LocalDateTime now);
+
+    @Query("""
+        SELECT t FROM Tutoring t
+        WHERE t.requestStatus = 'IN_PROGRESS'
+        AND t.endTime <= :now
+        """)
+    List<Tutoring> findInProgressList(@Param("now") LocalDateTime now);
+
+    @Query("""
+        SELECT t FROM Tutoring t
+        WHERE t.requestStatus = 'CREATED'
+        AND t.startTime <= :now
+        """)
+    List<Tutoring> findCreatedAndExpiredList(@Param("now") LocalDateTime now);
 }
