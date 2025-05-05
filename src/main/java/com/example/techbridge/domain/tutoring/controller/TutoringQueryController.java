@@ -5,7 +5,7 @@ import com.example.techbridge.domain.tutoring.dto.ReceiveTutoringSimpleResponse;
 import com.example.techbridge.domain.tutoring.dto.RequestTutoringSimpleResponse;
 import com.example.techbridge.domain.tutoring.entity.Tutoring.RequestStatus;
 import com.example.techbridge.domain.tutoring.service.TutoringQueryService;
-import com.example.techbridge.global.common.CommonResponse;
+import com.example.techbridge.global.common.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,25 +24,25 @@ public class TutoringQueryController {
 
     // 과외 신청한 목록 조회
     @GetMapping("/sent")
-    public CommonResponse<Page<RequestTutoringSimpleResponse>> getSentTutoringList(
+    public PageResponse<RequestTutoringSimpleResponse> getSentTutoringList(
         @RequestParam(required = false) RequestStatus status,
         @AuthenticationPrincipal LoginMember loginMember,
         Pageable pageable
     ) {
         Page<RequestTutoringSimpleResponse> result =
             tutoringQueryService.getSentTutoringList(loginMember.getId(), status, pageable);
-        return CommonResponse.success(result);
+        return PageResponse.from(result);
     }
 
     // 과외 신청 받은 목록 조회
     @GetMapping("/received")
-    public CommonResponse<Page<ReceiveTutoringSimpleResponse>> getReceivedTutoringList(
+    public PageResponse<ReceiveTutoringSimpleResponse> getReceivedTutoringList(
         @RequestParam(required = false) RequestStatus status,
         @AuthenticationPrincipal LoginMember loginMember,
         Pageable pageable
     ) {
         Page<ReceiveTutoringSimpleResponse> result =
             tutoringQueryService.getReceivedTutoringList(loginMember.getId(), status, pageable);
-        return CommonResponse.success(result);
+        return PageResponse.from(result);
     }
 }
