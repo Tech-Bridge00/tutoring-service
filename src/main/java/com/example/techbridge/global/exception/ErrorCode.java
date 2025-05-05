@@ -26,6 +26,7 @@ public enum ErrorCode {
     UNAUTHORIZED_TUTORING_ACCESS("T005", "과외 수신자 정보가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
     ALREADY_PROCESSED_TUTORING_REQUEST("T006", "과외 요청 상태가 이미 처리되었습니다.", HttpStatus.BAD_REQUEST),
     INVALID_TUTORING_STATUS("T007", "취소할 수 없는 상태입니다.", HttpStatus.BAD_REQUEST),
+    INVALID_TUTORING_REQUEST_TYPE("T008", "지원하지 않는 조회 타입입니다.", HttpStatus.BAD_REQUEST),
 
     // ====== AUTH ======
     INVALID_TOKEN("A001", "유효하지 않은 토큰입니다.", HttpStatus.BAD_REQUEST),
