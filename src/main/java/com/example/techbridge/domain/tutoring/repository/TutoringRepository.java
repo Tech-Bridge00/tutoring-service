@@ -2,6 +2,7 @@ package com.example.techbridge.domain.tutoring.repository;
 
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.tutoring.entity.Tutoring;
+import com.example.techbridge.domain.tutoring.entity.Tutoring.RequestStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -46,18 +47,22 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
     @Query("""
         SELECT t.id FROM Tutoring t
         WHERE t.requester.id = :requesterId
+        AND (:status IS NULL OR t.requestStatus = :status)
         ORDER BY t.startTime DESC
         """)
-    Page<Long> findTutoringPagesByRequesterId(@Param("requesterId") Long requesterId,
+    Page<Long> findTutoringPagesByRequesterIdAndStatus(@Param("requesterId") Long requesterId,
+        @Param("status") RequestStatus status,
         Pageable pageable);
 
     // 로그인한 사용자가 과외 신청을 받은 목록을 ID로 조회 및 시간순으로 정렬
     @Query("""
         SELECT t.id FROM Tutoring t
         WHERE t.receiver.id = :receiverId
+        AND (:status IS NULL OR t.requestStatus = :status)
         ORDER BY t.startTime DESC
         """)
-    Page<Long> findTutoringPagesByReceiverId(@Param("receiverId") Long receiverId,
+    Page<Long> findTutoringPagesByReceiverIdAndStatus(@Param("receiverId") Long receiverId,
+        @Param("status") RequestStatus status,
         Pageable pageable);
 
     // Tutor -> Student 과외 신청 목록
