@@ -1,6 +1,5 @@
 package com.example.techbridge.domain.tutoring.repository;
 
-import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.tutoring.entity.Tutoring;
 import com.example.techbridge.domain.tutoring.entity.Tutoring.RequestStatus;
 import java.time.LocalDateTime;
@@ -18,14 +17,14 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         SELECT EXISTS (
             SELECT 1
             FROM Tutoring t
-            WHERE t.requester = :requester
+            WHERE t.requester.id = :requesterId
             AND t.requestStatus IN (:statuses)
             AND t.startTime < :endTime
             AND t.endTime   > :startTime
         )
         """)
     boolean isAlreadyExistedTutoringByRequester(
-        @Param("requester") Member requester,
+        @Param("requesterId") Long requesterId,
         @Param("startTime") LocalDateTime startTime,
         @Param("endTime") LocalDateTime endTime,
         @Param("statuses") List<Tutoring.RequestStatus> statuses
@@ -35,14 +34,14 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         SELECT EXISTS (
             SELECT 1
             FROM Tutoring t
-            WHERE t.requester = :receiver
+            WHERE t.receiver.id = :receiverId
             AND t.requestStatus IN (:statuses)
             AND t.startTime < :endTime
             AND t.endTime   > :startTime
         )
         """)
     boolean isAlreadyExistedTutoringByReceiver(
-        @Param("receiver") Member receiver,
+        @Param("receiverId") Long receiverId,
         @Param("startTime") LocalDateTime startTime,
         @Param("endTime") LocalDateTime endTime,
         @Param("statuses") List<Tutoring.RequestStatus> statuses
@@ -90,6 +89,7 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         FROM Tutoring t
         JOIN FETCH t.receiver r
         JOIN FETCH r.student
+        LEFT JOIN FETCH r.tutor
         WHERE t.id IN (:ids)
         """)
     List<Tutoring> fetchReceiverStudent(@Param("ids") Collection<Long> ids);
@@ -100,6 +100,7 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         FROM Tutoring t
         JOIN FETCH t.requester r
         JOIN FETCH r.student
+        LEFT JOIN FETCH r.tutor
         WHERE t.id IN (:ids)
         """)
     List<Tutoring> fetchRequesterStudent(@Param("ids") Collection<Long> ids);
@@ -110,6 +111,7 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         FROM Tutoring t
         JOIN FETCH t.receiver r
         JOIN FETCH r.tutor
+        LEFT JOIN FETCH r.student
         WHERE t.id IN (:ids)
         """)
     List<Tutoring> fetchReceiverTutor(@Param("ids") Collection<Long> ids);
@@ -120,6 +122,7 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         FROM Tutoring t
         JOIN FETCH t.requester r
         JOIN FETCH r.tutor
+        LEFT JOIN FETCH r.student
         WHERE t.id IN (:ids)
         """)
     List<Tutoring> fetchRequesterTutor(@Param("ids") Collection<Long> ids);
