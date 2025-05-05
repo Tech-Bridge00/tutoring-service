@@ -5,7 +5,6 @@ import com.example.techbridge.domain.member.exception.MemberNotFoundException;
 import com.example.techbridge.domain.member.repository.MemberRepository;
 import com.example.techbridge.domain.tutoring.dto.ReceiveTutoringSimpleResponse;
 import com.example.techbridge.domain.tutoring.dto.RequestTutoringSimpleResponse;
-import com.example.techbridge.domain.tutoring.dto.TutoringSimpleResponse;
 import com.example.techbridge.domain.tutoring.entity.Tutoring;
 import com.example.techbridge.domain.tutoring.entity.Tutoring.RequestStatus;
 import com.example.techbridge.domain.tutoring.repository.TutoringRepository;
@@ -64,10 +63,10 @@ public class TutoringQueryService {
     }
 
     // Tutoring 리스트 정렬 및 Page 객체로 변환
-    private <T extends TutoringSimpleResponse> Page<T> toPage(
+    private <R> Page<R> toPage(
         Page<Long> idPage,
         Function<Collection<Long>, List<Tutoring>> fetchFunction,
-        Function<Tutoring, T> mapper,
+        Function<Tutoring, R> mapper,
         Pageable pageable) {
 
         List<Long> idList = idPage.getContent();
@@ -78,7 +77,7 @@ public class TutoringQueryService {
         Map<Long, Tutoring> map = fetchFunction.apply(idList).stream()
             .collect(Collectors.toMap(Tutoring::getId, Function.identity()));
 
-        List<T> content = idList.stream()
+        List<R> content = idList.stream()
             .map(map::get)
             .map(mapper)
             .toList();
