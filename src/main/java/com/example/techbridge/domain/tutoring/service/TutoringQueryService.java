@@ -37,7 +37,7 @@ public class TutoringQueryService {
             tutoringRepository.findPageIdListByRequester(loginId, status, pageable),
             (role == Role.TUTOR)
                 ? tutoringRepository::fetchReceiverStudent
-                : tutoringRepository::fetchReceiverTutor,
+                : tutoringRepository::fetchRequesterTutor,
             RequestTutoringSimpleResponse::from,
             pageable);
     }
@@ -49,7 +49,7 @@ public class TutoringQueryService {
         return toPage(
             tutoringRepository.findPageIdListByReceiver(loginId, status, pageable),
             (role == Role.TUTOR)
-                ? tutoringRepository::fetchRequesterStudent
+                ? tutoringRepository::fetchReceiverStudent
                 : tutoringRepository::fetchRequesterTutor,
             ReceiveTutoringSimpleResponse::from,
             pageable);
