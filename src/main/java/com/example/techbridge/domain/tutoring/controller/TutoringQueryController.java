@@ -1,8 +1,8 @@
 package com.example.techbridge.domain.tutoring.controller;
 
 import com.example.techbridge.auth.dto.LoginMember;
-import com.example.techbridge.domain.tutoring.dto.TutoringListType;
-import com.example.techbridge.domain.tutoring.dto.TutoringSimpleResponse;
+import com.example.techbridge.domain.tutoring.dto.ReceiveTutoringSimpleResponse;
+import com.example.techbridge.domain.tutoring.dto.RequestTutoringSimpleResponse;
 import com.example.techbridge.domain.tutoring.entity.Tutoring.RequestStatus;
 import com.example.techbridge.domain.tutoring.service.TutoringQueryService;
 import com.example.techbridge.global.common.CommonResponse;
@@ -22,16 +22,27 @@ public class TutoringQueryController {
 
     private final TutoringQueryService tutoringQueryService;
 
-    // 과외 목록 조회 (신청 or 수신)
-    @GetMapping
-    public CommonResponse<Page<? extends TutoringSimpleResponse>> getTutoringList(
-        @RequestParam TutoringListType type,                          // SENT or RECEIVED
-        @RequestParam(required = false) RequestStatus status,         // 필터용 status
+    // 과외 신청한 목록 조회
+    @GetMapping("/sent")
+    public CommonResponse<Page<RequestTutoringSimpleResponse>> getSentTutoringList(
+        @RequestParam(required = false) RequestStatus status,
         @AuthenticationPrincipal LoginMember loginMember,
         Pageable pageable
     ) {
-        Page<? extends TutoringSimpleResponse> result =
-            tutoringQueryService.getTutoringList(loginMember.getId(), type, status, pageable);
+        Page<RequestTutoringSimpleResponse> result =
+            tutoringQueryService.getSentTutoringList(loginMember.getId(), status, pageable);
+        return CommonResponse.success(result);
+    }
+
+    // 과외 신청 받은 목록 조회
+    @GetMapping("/received")
+    public CommonResponse<Page<ReceiveTutoringSimpleResponse>> getReceivedTutoringList(
+        @RequestParam(required = false) RequestStatus status,
+        @AuthenticationPrincipal LoginMember loginMember,
+        Pageable pageable
+    ) {
+        Page<ReceiveTutoringSimpleResponse> result =
+            tutoringQueryService.getReceivedTutoringList(loginMember.getId(), status, pageable);
         return CommonResponse.success(result);
     }
 }
