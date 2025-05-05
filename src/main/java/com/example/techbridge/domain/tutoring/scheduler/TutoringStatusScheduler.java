@@ -1,10 +1,7 @@
 package com.example.techbridge.domain.tutoring.scheduler;
 
-import com.example.techbridge.domain.tutoring.entity.Tutoring;
-import com.example.techbridge.domain.tutoring.entity.Tutoring.RequestStatus;
 import com.example.techbridge.domain.tutoring.repository.TutoringRepository;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,15 +21,15 @@ public class TutoringStatusScheduler {
         LocalDateTime now = LocalDateTime.now();
 
         // ACCEPTED 과외가 시작 시간이 된 경우 -> IN_PROGRESS
-        List<Tutoring> startList = tutoringRepository.findAcceptedList(now);
-        startList.forEach(tutoring -> tutoring.updateStatus(RequestStatus.IN_PROGRESS));
+        int started = tutoringRepository.bulkStart(now);
 
         // IN_PROGRESS 과외가 종료 시간이 된 경우 -> COMPLETED
-        List<Tutoring> endList = tutoringRepository.findInProgressList(now);
-        endList.forEach(tutoring -> tutoring.updateStatus(RequestStatus.COMPLETED));
+        int completed = tutoringRepository.bulkComplete(now);
 
         // CREATED 과외가 시작 시간에도 그대로인 경우 -> CANCELED
-        List<Tutoring> cancelList = tutoringRepository.findCreatedAndExpiredList(now);
-        cancelList.forEach(tutoring -> tutoring.updateStatus(RequestStatus.CANCELED));
+        int canceled = tutoringRepository.bulkCancel(now);
+
+        log.debug("status updated: started={}, completed={}, canceled={}", started, completed,
+            canceled);
     }
 }

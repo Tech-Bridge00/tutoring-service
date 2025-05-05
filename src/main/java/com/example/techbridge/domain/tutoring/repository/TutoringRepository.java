@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -127,24 +128,31 @@ public interface TutoringRepository extends JpaRepository<Tutoring, Long> {
         """)
     List<Tutoring> fetchRequesterTutor(@Param("ids") Collection<Long> ids);
 
+    @Modifying(clearAutomatically = true)
     @Query("""
-        SELECT t FROM Tutoring t
+        UPDATE Tutoring t
+        SET t.requestStatus = 'IN_PROGRESS'
         WHERE t.requestStatus = 'ACCEPTED'
         AND t.startTime <= :now
+        AND t.endTime > :now
         """)
-    List<Tutoring> findAcceptedList(@Param("now") LocalDateTime now);
+    int bulkStart(@Param("now") LocalDateTime now);
 
+    @Modifying(clearAutomatically = true)
     @Query("""
-        SELECT t FROM Tutoring t
+        UPDATE Tutoring t
+        SET t.requestStatus = 'COMPLETED'
         WHERE t.requestStatus = 'IN_PROGRESS'
         AND t.endTime <= :now
         """)
-    List<Tutoring> findInProgressList(@Param("now") LocalDateTime now);
+    int bulkComplete(@Param("now") LocalDateTime now);
 
+    @Modifying(clearAutomatically = true)
     @Query("""
-        SELECT t FROM Tutoring t
+        UPDATE Tutoring t
+        SET t.requestStatus = 'CANCELED'
         WHERE t.requestStatus = 'CREATED'
         AND t.startTime <= :now
         """)
-    List<Tutoring> findCreatedAndExpiredList(@Param("now") LocalDateTime now);
+    int bulkCancel(@Param("now") LocalDateTime now);
 }
