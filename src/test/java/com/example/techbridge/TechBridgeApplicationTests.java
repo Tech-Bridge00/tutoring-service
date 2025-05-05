@@ -1,13 +1,9 @@
-package com.example.tutoringservice;
+package com.example.techbridge;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TutoringServiceApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
+class TechBridgeApplicationTests {
 
 }
