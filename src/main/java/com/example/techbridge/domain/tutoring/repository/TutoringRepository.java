@@ -1,6 +1,6 @@
-package com.example.techbridge.domain.lecture.repository;
+package com.example.techbridge.domain.tutoring.repository;
 
-import com.example.techbridge.domain.lecture.entity.Tutoring;
+import com.example.techbridge.domain.tutoring.entity.Tutoring;
 import com.example.techbridge.domain.member.entity.Member;
 import java.time.LocalDateTime;
 import java.util.List;
