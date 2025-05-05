@@ -9,8 +9,10 @@ import com.example.techbridge.domain.tutoring.dto.RequestTutoringSimpleResponse;
 import com.example.techbridge.domain.tutoring.dto.TutoringListType;
 import com.example.techbridge.domain.tutoring.dto.TutoringSimpleResponse;
 import com.example.techbridge.domain.tutoring.entity.Tutoring;
+import com.example.techbridge.domain.tutoring.entity.Tutoring.RequestStatus;
 import com.example.techbridge.domain.tutoring.exception.InvalidTutoringRequestTypeException;
 import com.example.techbridge.domain.tutoring.repository.TutoringRepository;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,6 +35,7 @@ public class TutoringQueryService {
     public Page<? extends TutoringSimpleResponse> getTutoringList(
         Long loginMemberId,
         TutoringListType type,
+        @Nullable RequestStatus statusFilter,
         Pageable pageable
     ) {
         // 로그인한 회원 Role 조회
@@ -43,8 +46,8 @@ public class TutoringQueryService {
         switch (type) {
             case SENT -> {
                 // 신청한 과외 목록 ID 페이징
-                Page<Long> idPage = tutoringRepository.findTutoringPagesByRequesterId(loginMemberId,
-                    pageable);
+                Page<Long> idPage = tutoringRepository.findTutoringPagesByRequesterIdAndStatus(
+                    loginMemberId, statusFilter, pageable);
                 List<Long> idList = idPage.getContent();
 
                 // 로그인한 회원 role에 따라 수신자 정보 조회
@@ -58,8 +61,8 @@ public class TutoringQueryService {
             }
             case RECEIVED -> {
                 // 신청 받은 과외 목록 ID 페이징
-                Page<Long> idPage = tutoringRepository.findTutoringPagesByReceiverId(loginMemberId,
-                    pageable);
+                Page<Long> idPage = tutoringRepository.findTutoringPagesByReceiverIdAndStatus(
+                    loginMemberId, statusFilter, pageable);
                 List<Long> idList = idPage.getContent();
 
                 // 로그인한 회원 role에 따라 수신자 정보 조회
