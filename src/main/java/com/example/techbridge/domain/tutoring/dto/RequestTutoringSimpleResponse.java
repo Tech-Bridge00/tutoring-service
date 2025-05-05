@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class RequestTutoringSimpleResponse implements TutoringSimpleResponse{
+public class RequestTutoringSimpleResponse {
 
     private Long tutoringId;
 

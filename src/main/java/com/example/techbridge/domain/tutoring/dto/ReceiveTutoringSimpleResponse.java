@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ReceiveTutoringSimpleResponse implements TutoringSimpleResponse{
+public class ReceiveTutoringSimpleResponse {
 
     private Long tutoringId;
 
@@ -25,7 +25,7 @@ public class ReceiveTutoringSimpleResponse implements TutoringSimpleResponse{
     public static ReceiveTutoringSimpleResponse from(Tutoring tutoring) {
         return ReceiveTutoringSimpleResponse.builder()
             .tutoringId(tutoring.getId())
-            .requesterName(tutoring.getReceiver().getName())
+            .requesterName(tutoring.getRequester().getName())
             .startTime(tutoring.getStartTime())
             .endTime(tutoring.getEndTime())
             .location(tutoring.getLocation())
