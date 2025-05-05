@@ -72,7 +72,7 @@ class TutoringRepositoryTest extends AbstractMemberTestSupport {
 
         // when
         boolean exists = tutoringRepository.isAlreadyExistedTutoringByRequester(
-            student,
+            student.getId(),
             testTime,
             testTime.plusHours(3),
             RequestStatus.activeStatues()
