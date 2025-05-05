@@ -1,8 +1,8 @@
 package com.example.techbridge.domain.member.entity;
 
-import com.example.techbridge.domain.tutoring.entity.Tutoring;
 import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
+import com.example.techbridge.domain.tutoring.entity.Tutoring;
 import com.example.techbridge.global.common.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -85,9 +86,13 @@ public class Member extends BaseTimeEntity {
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Tutor tutor;
 
+    @Builder.Default
+    @ToString.Exclude
     @OneToMany(mappedBy = "requester")
     private List<Tutoring> sentRequests = new ArrayList<>();
 
+    @Builder.Default
+    @ToString.Exclude
     @OneToMany(mappedBy = "receiver")
     private List<Tutoring> receivedRequests = new ArrayList<>();
 
