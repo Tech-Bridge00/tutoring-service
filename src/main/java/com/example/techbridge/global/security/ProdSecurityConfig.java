@@ -56,6 +56,7 @@ public class ProdSecurityConfig {
             .headers(h -> h.frameOptions(FrameOptionsConfig::deny))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/members/profile-image-url").permitAll()
                 .requestMatchers("/auth/login", "/auth/refresh").permitAll()
                 .anyRequest().authenticated()
             )
