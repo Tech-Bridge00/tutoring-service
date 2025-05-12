@@ -28,7 +28,7 @@ public class MemberQueryController {
 
     @GetMapping("/{id}")
     public MemberDetailResponse findById(@PathVariable Long id) {
-        return MemberDetailResponse.of(memberQueryService.findById(id));
+        return memberQueryService.findById(id);
     }
 
     @GetMapping("/check")
