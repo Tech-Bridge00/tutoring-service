@@ -23,6 +23,7 @@ public class MemberDetailResponse {
     private String contact;
     private String email;
     private String profileImageKey;
+    @JsonInclude(Include.NON_NULL)
     private String profileImageUrl;
     private Role role;
     private String status;
@@ -102,6 +103,7 @@ public class MemberDetailResponse {
             .gender(m.getGender())
             .contact(m.getContact())
             .email(m.getEmail())
+            .profileImageKey(m.getProfileImageKey())
             .profileImageUrl(profileImageUrl)
             .role(m.getRole())
             .status(m.getStatus())
