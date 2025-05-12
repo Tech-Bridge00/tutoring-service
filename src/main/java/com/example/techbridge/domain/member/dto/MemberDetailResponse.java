@@ -23,6 +23,7 @@ public class MemberDetailResponse {
     private String contact;
     private String email;
     private String profileImageKey;
+    private String profileImageUrl;
     private Role role;
     private String status;
     private String location;
@@ -68,6 +69,40 @@ public class MemberDetailResponse {
             .contact(m.getContact())
             .email(m.getEmail())
             .profileImageKey(m.getProfileImageKey())
+            .role(m.getRole())
+            .status(m.getStatus())
+            .location(m.getLocation())
+            .totalRating(m.getTotalRating())
+            .totalMatchCount(m.getTotalMatchCount())
+            .totalClassCount(m.getTotalClassCount())
+            .student(student != null ? StudentPart.builder()
+                .interestedField(student.getInterestedField())
+                .status(student.getStatus())
+                .build() : null)
+            .tutor(tutor != null ? TutorPart.builder()
+                .introduction(tutor.getIntroduction())
+                .jobTitle(tutor.getJobTitle())
+                .portfolioUrl(tutor.getPortfolioUrl())
+                .totalExperience(tutor.getTotalExperience())
+                .currentlyEmployed(tutor.getCurrentlyEmployed())
+                .build() : null)
+            .build();
+    }
+
+    public static MemberDetailResponse of(Member m, String profileImageUrl) {
+        Student student = m.getStudent();
+        Tutor tutor = m.getTutor();
+
+        return MemberDetailResponse.builder()
+            .id(m.getId())
+            .username(m.getUsername())
+            .name(m.getName())
+            .nickname(m.getNickname())
+            .age(m.getAge())
+            .gender(m.getGender())
+            .contact(m.getContact())
+            .email(m.getEmail())
+            .profileImageUrl(profileImageUrl)
             .role(m.getRole())
             .status(m.getStatus())
             .location(m.getLocation())
