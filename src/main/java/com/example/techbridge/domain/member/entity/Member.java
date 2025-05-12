@@ -1,6 +1,5 @@
 package com.example.techbridge.domain.member.entity;
 
-import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
@@ -127,30 +126,28 @@ public class Member extends BaseTimeEntity {
         }
     }
 
-    public void updateProfile(MemberUpdateRequest request) {
-        if (request.getNickname() != null) {
-            this.nickname = request.getNickname();
-        }
+    public void updateProfileImageKey(String key) {
+        this.profileImageKey = key;
+    }
 
-        if (request.getEmail() != null) {
-            this.email = request.getEmail();
-        }
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-        if (request.getAge() != null) {
-            this.age = request.getAge();
-        }
+    public void updateAge(Integer age) {
+        this.age = age;
+    }
 
-        if (request.getContact() != null) {
-            this.contact = request.getContact();
-        }
+    public void updateContact(String contact) {
+        this.contact = contact;
+    }
 
-        if (request.getLocation() != null) {
-            this.location = request.getLocation();
-        }
+    public void updateLocation(String location) {
+        this.location = location;
+    }
 
-        if (request.getProfileImageKey() != null) {
-            this.profileImageKey = request.getProfileImageKey();
-        }
+    public void clearProfileImage() {
+        this.profileImageKey = null;
     }
 
     public void updateUsername(String username) {
