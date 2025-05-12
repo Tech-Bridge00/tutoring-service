@@ -22,7 +22,7 @@ public class MemberDetailResponse {
     private Gender gender;
     private String contact;
     private String email;
-    private String profileImage;
+    private String profileImageKey;
     private Role role;
     private String status;
     private String location;
@@ -67,7 +67,7 @@ public class MemberDetailResponse {
             .gender(m.getGender())
             .contact(m.getContact())
             .email(m.getEmail())
-            .profileImage(m.getProfileImage())
+            .profileImageKey(m.getProfileImageKey())
             .role(m.getRole())
             .status(m.getStatus())
             .location(m.getLocation())

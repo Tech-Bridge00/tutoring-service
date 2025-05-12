@@ -59,7 +59,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, unique = true, length = 128)
     private String email;
 
-    private String profileImage;
+    private String profileImageKey;
 
     @Column(nullable = false, length = 50)
     private String status;
@@ -103,7 +103,7 @@ public class Member extends BaseTimeEntity {
             .gender(request.getGender())
             .contact(request.getContact())
             .email(request.getEmail())
-            .profileImage(request.getProfileImage())
+            .profileImageKey(request.getProfileImageKey())
             .status(request.getStatus())
             .role(request.getRole())
             .location(request.getLocation())
