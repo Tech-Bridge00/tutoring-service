@@ -5,6 +5,7 @@ import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Service
@@ -12,6 +13,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 public class S3Uploader {
 
     private final S3Presigner s3Presigner;
+    private final S3Client s3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -35,5 +37,12 @@ public class S3Uploader {
                     .key(key)
                 ))
             .url();
+    }
+
+    public void delete(String key) {
+        s3Client.deleteObject(o -> o
+            .bucket(bucket)
+            .key(key)
+        );
     }
 }
