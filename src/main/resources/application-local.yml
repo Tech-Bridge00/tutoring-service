@@ -24,3 +24,13 @@ spring:
 
 jwt:
   secret: bXktc3VwZXItc2VjdXJlLWp3dC1rZXktMTIzNDU2Nzg5MCEh
+
+cloud:
+  aws:
+    s3:
+      bucket: my-tech-bridge-bucket
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
