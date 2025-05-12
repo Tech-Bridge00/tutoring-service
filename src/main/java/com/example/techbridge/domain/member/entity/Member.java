@@ -147,6 +147,10 @@ public class Member extends BaseTimeEntity {
         if (request.getLocation() != null) {
             this.location = request.getLocation();
         }
+
+        if (request.getProfileImageKey() != null) {
+            this.profileImageKey = request.getProfileImageKey();
+        }
     }
 
     public void updateUsername(String username) {
