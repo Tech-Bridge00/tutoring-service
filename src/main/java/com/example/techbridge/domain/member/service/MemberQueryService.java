@@ -5,6 +5,7 @@ import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.entity.Member.Role;
 import com.example.techbridge.domain.member.exception.MemberNotFoundException;
 import com.example.techbridge.domain.member.repository.MemberRepository;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberQueryService {
 
     private final MemberRepository memberRepository;
+    private final S3Uploader s3Uploader;
 
-    public Member findById(Long id) {
+    public MemberDetailResponse findById(Long id) {
         Member member = memberRepository.findWithDetailsById(id)
             .orElseThrow(MemberNotFoundException::new);
 
@@ -27,7 +29,13 @@ public class MemberQueryService {
             throw new MemberNotFoundException();
         }
 
-        return member;
+        String profileImageUrl = null;
+        if (member.getProfileImageKey() != null) {
+            profileImageUrl = s3Uploader.generateViewUrl(member.getProfileImageKey(),
+                Duration.ofMinutes(5)).toString();
+        }
+
+        return MemberDetailResponse.of(member, profileImageUrl);
     }
 
     public Member findByUsername(String username) {
@@ -52,6 +60,14 @@ public class MemberQueryService {
         Page<Member> page = (role == null) ? memberRepository.findAll(pageable)
             : memberRepository.findByRole(role, pageable);
 
-        return page.map(MemberDetailResponse::of);
+        return page.map(member -> {
+            String profileImageUrl = null;
+            if (member.getProfileImageKey() != null) {
+                profileImageUrl = s3Uploader.generateViewUrl(member.getProfileImageKey(),
+                    Duration.ofMinutes(5)).toString();
+            }
+
+            return MemberDetailResponse.of(member, profileImageUrl);
+        });
     }
 }
