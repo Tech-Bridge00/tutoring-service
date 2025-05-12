@@ -5,6 +5,8 @@ import com.example.techbridge.domain.member.entity.Member.Gender;
 import com.example.techbridge.domain.member.entity.Member.Role;
 import com.example.techbridge.domain.member.entity.Student;
 import com.example.techbridge.domain.member.entity.Tutor;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -28,7 +30,9 @@ public class MemberDetailResponse {
     private Long totalMatchCount;
     private Long totalClassCount;
 
+    @JsonInclude(Include.NON_NULL)
     private StudentPart student;
+    @JsonInclude(Include.NON_NULL)
     private TutorPart tutor;
 
     @Getter
