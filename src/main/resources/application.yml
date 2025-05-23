@@ -19,3 +19,13 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET:my-default-jwt-secret}
+
+cloud:
+  aws:
+    s3:
+      bucket: my-tech-bridge-bucket
+    region:
+      static: ${AWS_REGION}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}

@@ -60,7 +60,7 @@ class AuthControllerTest {
             .gender(Member.Gender.M)
             .contact("01012345678")
             .email("test@example.com")
-            .profileImage(null)
+            .profileImageKey(null)
             .status("대학생")
             .role(Member.Role.STUDENT)
             .location("서울시 강남구")

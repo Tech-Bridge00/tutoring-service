@@ -34,6 +34,7 @@ public abstract class AbstractMemberTestSupport {
             .age(21)
             .gender(Member.Gender.M)
             .contact(randomContact())
+            .profileImageKey("testKey")
             .email("student_" + uuid + "@email.com")
             .status("대학생")
             .role(Member.Role.STUDENT)
@@ -62,6 +63,7 @@ public abstract class AbstractMemberTestSupport {
             .age(33)
             .gender(Member.Gender.F)
             .contact(randomContact())
+            .profileImageKey("testKey")
             .email("tutor_" + uuid + "@email.com")
             .status("직장인")
             .role(Member.Role.TUTOR)
@@ -89,6 +91,7 @@ public abstract class AbstractMemberTestSupport {
             .age(member.getAge())
             .email(member.getEmail())
             .location(member.getLocation())
+            .profileImageKey(member.getProfileImageKey())
             .build();
     }
 

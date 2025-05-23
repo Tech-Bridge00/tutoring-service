@@ -1,5 +1,6 @@
 package com.example.techbridge.domain.member.service;
 
+import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.MemberUpdateWrapper;
 import com.example.techbridge.domain.member.dto.PasswordChangeRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
@@ -38,6 +39,7 @@ public class MemberCommandService {
     private final StudentService studentService;
     private final TutorService tutorService;
     private final PasswordEncoder passwordEncoder;
+    private final S3Uploader s3Uploader;
 
     private Map<Role, BiConsumer<Member, SignUpRequestWrapper>> postProcessors;
     private static final BiConsumer<Member, SignUpRequestWrapper> NOOP = (m, w) -> {
@@ -100,7 +102,7 @@ public class MemberCommandService {
 
         validateSameMember(id, loginMemberId);
 
-        foundMember.updateProfile(request.getMember());
+        updateProfile(foundMember, request.getMember());
 
         updateStudentInfo(request, foundMember);
 
@@ -130,6 +132,34 @@ public class MemberCommandService {
         }
 
         memberRepository.save(foundMember);
+    }
+
+    private void updateProfile(Member member, MemberUpdateRequest request) {
+        String oldKey = member.getProfileImageKey();
+        String newKey = request.getProfileImageKey();
+
+        if (newKey == null && oldKey != null) {
+            s3Uploader.delete(oldKey);
+            member.clearProfileImage();
+        } else if (newKey != null && !newKey.equals(oldKey)) {
+            member.updateProfileImageKey(newKey);
+        }
+
+        if (request.getNickname() != null) {
+            member.updateNickname(request.getNickname());
+        }
+        if (request.getEmail() != null) {
+            member.updateEmail(request.getEmail());
+        }
+        if (request.getAge() != null) {
+            member.updateAge(request.getAge());
+        }
+        if (request.getContact() != null) {
+            member.updateContact(request.getContact());
+        }
+        if (request.getLocation() != null) {
+            member.updateLocation(request.getLocation());
+        }
     }
 
     private void updateTutorInfo(MemberUpdateWrapper request, Member foundMember) {

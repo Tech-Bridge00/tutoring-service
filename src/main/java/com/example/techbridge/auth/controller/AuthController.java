@@ -7,11 +7,14 @@ import com.example.techbridge.auth.exception.InvalidTokenException;
 import com.example.techbridge.auth.exception.RefreshTokenNotFoundException;
 import com.example.techbridge.auth.jwt.JwtTokenProvider;
 import com.example.techbridge.auth.repository.RefreshTokenRepository;
+import com.example.techbridge.auth.service.TokenBlacklistService;
 import com.example.techbridge.domain.member.entity.Member;
 import com.example.techbridge.domain.member.exception.InvalidMemberPasswordException;
 import com.example.techbridge.domain.member.exception.MemberNotFoundException;
 import com.example.techbridge.domain.member.repository.MemberRepository;
 import com.example.techbridge.global.common.CommonResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +31,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/login")
     public CommonResponse<TokenResponse> login(@RequestBody LoginRequest request) {
@@ -72,7 +76,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public CommonResponse<Void> logout(@RequestBody RefreshRequest request) {
+    public CommonResponse<Void> logout(@RequestBody RefreshRequest request, HttpServletRequest httpRequest) {
         if (!jwtTokenProvider.isValid(request.getRefreshToken())) {
             throw new InvalidTokenException();
         }
@@ -86,6 +90,12 @@ public class AuthController {
         }
 
         refreshTokenRepository.delete(memberId);
+        String accessToken = jwtTokenProvider.resolveBearer(httpRequest);
+        if (accessToken != null && jwtTokenProvider.isValid(accessToken)) {
+            String jti = jwtTokenProvider.getJti(accessToken);
+            Duration ttl = jwtTokenProvider.getRemainingTTL(accessToken);
+            tokenBlacklistService.blacklist(jti, ttl);
+        }
 
         return CommonResponse.success(null);
     }

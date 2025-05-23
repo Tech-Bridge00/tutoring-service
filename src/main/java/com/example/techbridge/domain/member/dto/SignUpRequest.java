@@ -55,7 +55,7 @@ public class SignUpRequest {
     private String email;
 
     @Size(max = 2083)
-    private String profileImage;
+    private String profileImageKey;
 
     @NotBlank(message = "현재 상태 정보는 필수입니다.")
     private String status;

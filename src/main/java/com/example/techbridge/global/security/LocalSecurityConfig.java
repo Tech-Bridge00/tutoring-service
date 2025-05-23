@@ -58,6 +58,7 @@ public class LocalSecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/members/profile-image-url").permitAll()
                 .requestMatchers("/auth/login", "/auth/refresh").permitAll()
                 .anyRequest().authenticated()
             )

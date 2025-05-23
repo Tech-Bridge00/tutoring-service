@@ -1,6 +1,5 @@
 package com.example.techbridge.domain.member.entity;
 
-import com.example.techbridge.domain.member.dto.MemberUpdateRequest;
 import com.example.techbridge.domain.member.dto.SignUpRequest;
 import com.example.techbridge.global.common.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
@@ -59,7 +58,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, unique = true, length = 128)
     private String email;
 
-    private String profileImage;
+    private String profileImageKey;
 
     @Column(nullable = false, length = 50)
     private String status;
@@ -103,7 +102,7 @@ public class Member extends BaseTimeEntity {
             .gender(request.getGender())
             .contact(request.getContact())
             .email(request.getEmail())
-            .profileImage(request.getProfileImage())
+            .profileImageKey(request.getProfileImageKey())
             .status(request.getStatus())
             .role(request.getRole())
             .location(request.getLocation())
@@ -127,26 +126,28 @@ public class Member extends BaseTimeEntity {
         }
     }
 
-    public void updateProfile(MemberUpdateRequest request) {
-        if (request.getNickname() != null) {
-            this.nickname = request.getNickname();
-        }
+    public void updateProfileImageKey(String key) {
+        this.profileImageKey = key;
+    }
 
-        if (request.getEmail() != null) {
-            this.email = request.getEmail();
-        }
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
-        if (request.getAge() != null) {
-            this.age = request.getAge();
-        }
+    public void updateAge(Integer age) {
+        this.age = age;
+    }
 
-        if (request.getContact() != null) {
-            this.contact = request.getContact();
-        }
+    public void updateContact(String contact) {
+        this.contact = contact;
+    }
 
-        if (request.getLocation() != null) {
-            this.location = request.getLocation();
-        }
+    public void updateLocation(String location) {
+        this.location = location;
+    }
+
+    public void clearProfileImage() {
+        this.profileImageKey = null;
     }
 
     public void updateUsername(String username) {

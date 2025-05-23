@@ -16,7 +16,7 @@ public class MemberResponse {
     private final Gender gender;
     private final String contact;
     private final String email;
-    private final String profileImage;
+    private final String profileImageKey;
     private final Role role;
     private final String status;
     private final String location;
@@ -33,7 +33,7 @@ public class MemberResponse {
         this.gender = member.getGender();
         this.contact = member.getContact();
         this.email = member.getEmail();
-        this.profileImage = member.getProfileImage();
+        this.profileImageKey = member.getProfileImageKey();
         this.role = member.getRole();
         this.status = member.getStatus();
         this.location = member.getLocation();

@@ -34,4 +34,6 @@ public class MemberUpdateRequest {
 
     @NotBlank(message = "위치 정보는 필수입니다.")
     private String location;
+
+    private String profileImageKey;
 }
