@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: techbridge
+
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+
+  jpa:
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    root: INFO
+    com.example.techbridge: DEBUG
+
+jwt:
+  secret: ${JWT_SECRET:my-default-jwt-secret}
+
+cloud:
+  aws:
+    s3:
+      bucket: my-tech-bridge-bucket
+    region:
+      static: ${AWS_REGION}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY_ID}
+      secret-key: ${AWS_SECRET_ACCESS_KEY}
